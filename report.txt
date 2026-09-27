@@ -1,0 +1,56 @@
+STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
+
+Generated At : 2026-09-28 00:34:26 (+07:00)
+App Version  : 1.0
+Endianness   : Little-Endian
+Encoding     : UTF-8 (with fixed-size byte fields)
+
+====================================================================================================
+ROOM RECORDS
+
+Room ID | Type       | Rent    | Water Rate | Electric Rate | Status    | Tenant | Record Status
+--------+------------+---------+------------+---------------+-----------+--------+--------------
+101     | new_duplex | 3600.00 | 600.00     | 100.00        | OCCUPIED  | ธ9     | ACTIVE       
+ยด      | ไไก        | 3500.00 | 5000.00    | 300.00        | AVAILABLE |        | ACTIVE       
+สด      | มากๆ       | 5000.00 | 5000.00    | 5000.00       | OCCUPIED  | Th     | ACTIVE       
+
+====================================================================================================
+ROOM SUMMARY
+
+- Total Records     : 3
+- Active Records    : 3
+- Deleted Records   : 0
+- Free Slots        : []
+- Active Rooms      : 3
+- Occupied Rooms    : 2
+- Available Rooms   : 1
+
+====================================================================================================
+TENANT SUMMARY
+
+- Total Records     : 2
+- Active Records    : 2
+- Deleted Records   : 0
+- Free Slots        : []
+- Active Tenants    : 2
+
+====================================================================================================
+PAYMENT SUMMARY
+
+- Total Records     : 0
+- Active Records    : 0
+- Deleted Records   : 0
+- Free Slots        : []
+- Paid Bills        : 0
+- Unpaid Bills      : 0
+- Total Amount      : 0
+- Paid Amount       : 0
+- Unpaid Amount     : 0
+
+Amounts and status counts include active records only.
+Total Records counts physical slots, including deleted records.
+Free Slots lists zero-based reusable record numbers.
+
+RECENT OPERATIONS (current session, latest 20)
+------------------------------------------------------------
+No operations in this session.
