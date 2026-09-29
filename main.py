@@ -16,20 +16,24 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 REPORT_PATH = os.path.join(BASE_DIR, "report.txt")
 
+# S1 คำนวณและสร้างรูปแบบข้อมูลไบนารี
 # header 16 ไบต์ (ทุกไฟล์): magic, version, ขนาด 1 record, จำนวน slot ทั้งหมด (รวมที่ลบ)
 HEADER = struct.Struct("<4sIII")
 
 # kind -> (magic, ชื่อไฟล์, [(ชื่อฟิลด์, struct format), ...])   ฟิลด์แรก = รหัสหลัก (ID)
 # '10s' = string 10 ไบต์ (เติม \x00 ให้เต็ม), 'd' = double 8 ไบต์, '?' = bool 1 ไบต์
 SCHEMAS = {
+    
     "ROOM": ("ROOM", "rooms.dat", [
         ("room_id", "10s"), ("room_type", "20s"), ("monthly_rent", "d"),
         ("water_rate", "d"), ("electric_rate", "d"), ("status", "12s"),
         ("tenant_id", "10s"), ("active", "?")]),
+    
     "TENANT": ("TENT", "tenants.dat", [
         ("tenant_id", "10s"), ("student_id", "15s"), ("name", "40s"),
         ("phone", "15s"), ("room_id", "10s"), ("contract_start", "10s"),
         ("contract_end", "10s"), ("deposit", "d"), ("status", "10s"), ("active", "?")]),
+    
     "PAYMENT": ("PAYM", "payments.dat", [
         ("payment_id", "10s"), ("tenant_id", "10s"), ("room_id", "10s"),
         ("billing_month", "7s"), ("room_rent", "d"), ("water_units", "d"),
@@ -40,6 +44,8 @@ SCHEMAS = {
 # สร้าง struct ของแต่ละไฟล์จากรายการฟิลด์ด้านบน (RECORD_SIZE: ROOM=77, TENANT=129, PAYMENT=122)
 LAYOUT = {kind: struct.Struct("<" + "".join(code for _, code in schema[2]))
           for kind, schema in SCHEMAS.items()}
+
+
 
 # หัวคอลัมน์ตอนแสดงตาราง: (ชื่อคอลัมน์, ชื่อฟิลด์)
 COLUMNS = {
@@ -68,16 +74,18 @@ def log(text):
 
 
 # ============================================================ 2) รับ input พร้อมตรวจความถูกต้อง
-def ask_text(prompt, max_bytes, optional=False):
-    """ข้อความห้ามว่าง และห้ามเกิน max_bytes 'ไบต์' (ภาษาไทย 1 ตัว = 3 ไบต์)"""
+def ask_int_text(prompt, max_bytes, optional=False):
+    """ตัวเลข 0-9 ล้วนเท่านั้น ห้ามว่าง และห้ามเกิน max_bytes หลัก"""
     while True:
         text = input(prompt).strip()
         if text == "":
             if optional:
-                return None  # None = ผู้ใช้ปล่อยว่าง = ไม่แก้ค่าเดิม
+                return None
             print("ERROR: This field cannot be empty.")
-        elif len(text.encode("utf-8")) > max_bytes:
-            print(f"ERROR: Too long (maximum {max_bytes} UTF-8 bytes).")
+        elif not text.isdigit():
+            print("ERROR: Please enter digits only (0-9).")
+        elif len(text) > max_bytes:
+            print(f"ERROR: Too long (maximum {max_bytes} digits).")
         else:
             return text
 
@@ -442,9 +450,9 @@ def generate_report():
 
 # ============================================================ 7) เมนู Add / Update / Delete / View
 def add_room():
-    room_id = ask_text("Room ID: ", 10)
+    room_id = ask_int_text("Room ID: ", 10)
     check_new_id("ROOM", room_id)  # เช็กตั้งแต่แรก ไม่ต้องรอกรอกครบ
-    room_type = ask_text("Room type: ", 20)
+    room_type = ask_int_text("Room type: ", 20)
     rent = ask_amount("Monthly rent: ")
     water_rate = ask_amount("Water rate: ")
     electric_rate = ask_amount("Electric rate: ")
@@ -453,10 +461,10 @@ def add_room():
 
 
 def update_room():
-    slot, room = get_record("ROOM", ask_text("Room ID: ", 10))
+    slot, room = get_record("ROOM", ask_int_text("Room ID: ", 10))
     show_one(room)
     print("Leave a field blank to keep its current value.")
-    room_type = ask_text("Room type: ", 20, optional=True)
+    room_type = ask_int_text("Room type: ", 20, optional=True)
     rent = ask_amount("Monthly rent: ", optional=True)
     water_rate = ask_amount("Water rate: ", optional=True)
     electric_rate = ask_amount("Electric rate: ", optional=True)
@@ -474,12 +482,12 @@ def update_room():
 
 
 def add_tenant():
-    tenant_id = ask_text("Tenant ID: ", 10)
+    tenant_id = ask_int_text("Tenant ID: ", 10)
     check_new_id("TENANT", tenant_id)
-    student_id = ask_text("Student ID: ", 15)
+    student_id = ask_int_text("Student ID: ", 15)
     name = ask_text("Name (max 40 UTF-8 bytes): ", 40)
-    phone = ask_text("Phone: ", 15)
-    room_id = ask_text("Room ID: ", 10)
+    phone = ask_int_text("Phone: ", 15)
+    room_id = ask_int_text("Room ID: ", 10)
     if get_record("ROOM", room_id)[1]["status"] != "AVAILABLE":
         raise ValueError("Room is already occupied.")
     start = ask_date("Contract start (YYYY-MM-DD): ")
@@ -490,11 +498,11 @@ def add_tenant():
 
 
 def update_tenant():
-    slot, tenant = get_record("TENANT", ask_text("Tenant ID: ", 10))
+    slot, tenant = get_record("TENANT", ask_int_text("Tenant ID: ", 10))
     show_one(tenant)
     print("Leave a field blank to keep its current value.")
     name = ask_text("Name: ", 40, optional=True)
-    phone = ask_text("Phone: ", 15, optional=True)
+    phone = ask_int_text("Phone: ", 15, optional=True)
     end = ask_date("Contract end: ", earliest=tenant["contract_start"], optional=True)
     deposit = ask_amount("Deposit: ", optional=True)
     if name is not None:
@@ -511,9 +519,9 @@ def update_tenant():
 
 
 def add_payment():
-    payment_id = ask_text("Payment ID: ", 10)
+    payment_id = ask_int_text("Payment ID: ", 10)
     check_new_id("PAYMENT", payment_id)
-    tenant_id = ask_text("Tenant ID: ", 10)
+    tenant_id = ask_int_text("Tenant ID: ", 10)
     tenant = get_record("TENANT", tenant_id)[1]
     room = get_record("ROOM", tenant["room_id"])[1]
     print(f"Room {room['room_id']} | Rent {room['monthly_rent']:.2f} | "
@@ -528,7 +536,7 @@ def add_payment():
 
 
 def update_payment():
-    slot, payment = get_record("PAYMENT", ask_text("Payment ID: ", 10))
+    slot, payment = get_record("PAYMENT", ask_int_text("Payment ID: ", 10))
     if payment["status"] == "PAID":
         raise ValueError("A paid bill cannot be edited.")
     show_one(payment)
@@ -561,18 +569,18 @@ def update_payment():
 
 
 def mark_paid():
-    payment = pay_bill(ask_text("Payment ID: ", 10))
+    payment = pay_bill(ask_int_text("Payment ID: ", 10))
     print(f"Payment marked PAID on {payment['payment_date']}.")
 
 
 def delete_one(kind):
-    remove_record(kind, ask_text(f"{kind.title()} ID: ", 10))
+    remove_record(kind, ask_int_text(f"{kind.title()} ID: ", 10))
     print("Record logically deleted; its slot is now reusable.")
 
 
 def view_action(kind, choice):
     if choice == "1":  # ดูรายการเดียว
-        show_one(get_record(kind, ask_text(f"{kind.title()} ID: ", 10))[1])
+        show_one(get_record(kind, ask_int_text(f"{kind.title()} ID: ", 10))[1])
         return
     if choice == ("6" if kind == "PAYMENT" else "5"):  # สถิติโดยสรุป
         print("\n".join(summary_lines(summary(kind))))
@@ -582,7 +590,7 @@ def view_action(kind, choice):
         status = "AVAILABLE" if choice == "3" else "OCCUPIED"
         records = [r for r in records if r["status"] == status]
     elif kind == "TENANT" and choice == "3":
-        room_id = ask_text("Room ID: ", 10)
+        room_id = ask_int_text("Room ID: ", 10)
         records = [t for t in records if t["room_id"] == room_id]
     elif kind == "PAYMENT" and choice == "3":
         month = ask_month("Billing month (YYYY-MM): ")

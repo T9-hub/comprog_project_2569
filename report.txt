@@ -1,6 +1,6 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-09-28 00:34:26 (+07:00)
+Generated At : 2026-09-29 11:53:51 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -37,14 +37,14 @@ TENANT SUMMARY
 ====================================================================================================
 PAYMENT SUMMARY
 
-- Total Records     : 0
-- Active Records    : 0
+- Total Records     : 1
+- Active Records    : 1
 - Deleted Records   : 0
 - Free Slots        : []
-- Paid Bills        : 0
+- Paid Bills        : 1
 - Unpaid Bills      : 0
-- Total Amount      : 0
-- Paid Amount       : 0
+- Total Amount      : 28528.00
+- Paid Amount       : 28528.00
 - Unpaid Amount     : 0
 
 Amounts and status counts include active records only.
