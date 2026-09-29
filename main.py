@@ -88,6 +88,19 @@ def ask_int_text(prompt, max_bytes, optional=False):
             print(f"ERROR: Too long (maximum {max_bytes} digits).")
         else:
             return text
+        
+def ask_text(prompt, max_bytes, optional=False):
+    """ข้อความห้ามว่าง และห้ามเกิน max_bytes 'ไบต์' (ภาษาไทย 1 ตัว = 3 ไบต์)"""
+    while True:
+        text = input(prompt).strip()
+        if text == "":
+            if optional:
+                return None
+            print("ERROR: This field cannot be empty.")
+        elif len(text.encode("utf-8")) > max_bytes:
+            print(f"ERROR: Too long (maximum {max_bytes} UTF-8 bytes).")
+        else:
+            return text
 
 
 def ask_amount(prompt, optional=False):
@@ -450,7 +463,7 @@ def generate_report():
 
 # ============================================================ 7) เมนู Add / Update / Delete / View
 def add_room():
-    room_id = ask_int_text("Room ID: ", 10)
+    room_id = ask_text("Room ID: ", 10)
     check_new_id("ROOM", room_id)  # เช็กตั้งแต่แรก ไม่ต้องรอกรอกครบ
     room_type = ask_int_text("Room type: ", 20)
     rent = ask_amount("Monthly rent: ")
@@ -461,7 +474,7 @@ def add_room():
 
 
 def update_room():
-    slot, room = get_record("ROOM", ask_int_text("Room ID: ", 10))
+    slot, room = get_record("ROOM", ask_text("Room ID: ", 10))
     show_one(room)
     print("Leave a field blank to keep its current value.")
     room_type = ask_int_text("Room type: ", 20, optional=True)
