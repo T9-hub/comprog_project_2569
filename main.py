@@ -1,8 +1,4 @@
 """main.py - ระบบจัดการหอพักนิสิต (Python File I/O: ไฟล์ binary + struct)
-
-รัน: python main.py
-ไฟล์ข้อมูล: data/rooms.dat, data/tenants.dat, data/payments.dat   รายงาน: report.txt
-
 """
 import os
 import math
@@ -20,8 +16,7 @@ REPORT_PATH = os.path.join(BASE_DIR, "report.txt")
 # header 16 ไบต์ (ทุกไฟล์): magic, version, ขนาด 1 record, จำนวน slot ทั้งหมด (รวมที่ลบ)
 HEADER = struct.Struct("<4sIII")
 
-# kind -> (magic, ชื่อไฟล์, [(ชื่อฟิลด์, struct format), ...])   ฟิลด์แรก = รหัสหลัก (ID)
-# '10s' = string 10 ไบต์ (เติม \x00 ให้เต็ม), 'd' = double 8 ไบต์, '?' = bool 1 ไบต์
+# '10s' = string 10 ไบต์ , 'd' = double 8 ไบต์, '?' = bool 1 ไบต์
 SCHEMAS = {
     
     "ROOM": ("ROOM", "rooms.dat", [
@@ -461,7 +456,111 @@ def generate_report():
         print(f"ERROR: Cannot write the report ({error}).")
 
 
-# ============================================================ 7) เมนู Add / Update / Delete / View
+
+
+
+# ============================================================ 6.5) รายงานตามที่อาจารย์ขอ
+def print_table(rows, headers, keys):
+    """สร้างตารางข้อความจาก list of dict ตาม headers/keys ที่กำหนดเอง"""
+    if not rows:
+        return ["No records found."]
+    table = [[show_value(row[k]) for k in keys] for row in rows]
+    widths = [max(len(cell) for cell in column) for column in zip(headers, *table)]
+    lines = [" | ".join(h.ljust(w) for h, w in zip(headers, widths)),
+             "-+-".join("-" * w for w in widths)]
+    for row in table:
+        lines.append(" | ".join(c.ljust(w) for c, w in zip(row, widths)))
+    return lines
+
+
+# ---------- Report 1: ค่าเช่า/น้ำ/ไฟ ของผู้เช่าทุกคน รายเดือน ----------
+def report_monthly_billing(month):
+    tenants = {t["tenant_id"]: t["name"] for t in active_records("TENANT")}
+    rows = []
+    for p in active_records("PAYMENT"):
+        if p["billing_month"] != month:
+            continue
+        rows.append({"tenant_id": p["tenant_id"], "name": tenants.get(p["tenant_id"], "(unknown)"),
+                     "room_id": p["room_id"], "room_rent": p["room_rent"],
+                     "water_cost": p["water_cost"], "electric_cost": p["electric_cost"],
+                     "total": p["total"]})
+    return rows, sum(r["total"] for r in rows)
+
+
+def monthly_billing_report_action():
+    month = ask_month("Billing month (YYYY-MM): ")
+    rows, grand_total = report_monthly_billing(month)
+    headers = ["Tenant ID", "Name", "Room", "Rent", "Water", "Electric", "Total"]
+    keys = ["tenant_id", "name", "room_id", "room_rent", "water_cost", "electric_cost", "total"]
+    print(f"\nMONTHLY TENANT BILLING REPORT - {month}\n")
+    print("\n".join(print_table(rows, headers, keys)))
+    print(f"\nGrand Total ({month}): {grand_total:.2f}  |  Records: {len(rows)}")
+
+
+# ---------- Report 2: แต่ละประเภทห้อง มีใครอยู่บ้าง ----------
+def report_by_room_type():
+    tenant_by_room = {t["room_id"]: t["name"] for t in active_records("TENANT")}
+    by_type = {}
+    for room in active_records("ROOM"):
+        by_type.setdefault(room["room_type"], []).append({
+            "room_id": room["room_id"], "status": room["status"],
+            "tenant_name": tenant_by_room.get(room["room_id"], "-")})
+    return by_type
+
+
+def room_type_report_action():
+    by_type = report_by_room_type()
+    print("\nROOM TYPE REPORT\n")
+    if not by_type:
+        print("No rooms found.")
+        return
+    headers = ["Room ID", "Status", "Tenant"]
+    keys = ["room_id", "status", "tenant_name"]
+    for room_type, rooms in by_type.items():
+        print(f"Room Type: {room_type}  ({len(rooms)} rooms)")
+        print("\n".join(print_table(rooms, headers, keys)) + "\n")
+
+
+# ---------- Report 3: อยู่มากี่เดือน จ่ายไปแล้วเท่าไหร่ ----------
+def report_tenant_history(tenant_id):
+    tenant = get_record("TENANT", tenant_id)[1]
+    start = datetime.datetime.strptime(tenant["contract_start"], "%Y-%m-%d").date()
+    end = (datetime.date.today() if tenant["status"] == "ACTIVE" else
+           datetime.datetime.strptime(tenant["contract_end"], "%Y-%m-%d").date())
+    months = (end.year - start.year) * 12 + (end.month - start.month)
+    if end.day < start.day:
+        months -= 1
+    months = max(months, 0)
+    paid = [p["total"] for p in active_records("PAYMENT")
+            if p["tenant_id"] == tenant_id and p["status"] == "PAID"]
+    return tenant, months, sum(paid), len(paid)
+
+
+def tenant_history_report_action():
+    tenant_id = ask_int_text("Tenant ID: ", 10)
+    tenant, months, total_paid, bill_count = report_tenant_history(tenant_id)
+    print(f"""
+TENANT STAY & PAYMENT REPORT
+
+Tenant ID    : {tenant['tenant_id']}
+Name         : {tenant['name']}
+Room         : {tenant['room_id']}
+Status       : {tenant['status']}
+Months Stayed: {months}
+Bills Paid   : {bill_count}
+Total Paid   : {total_paid:.2f}""")
+
+
+
+
+
+
+
+# function REPORT
+
+
+
+# ============= 7) เมนู Add / Update / Delete / View ============= #
 def add_room():
     room_id = ask_text("Room ID: ", 10)
     check_new_id("ROOM", room_id)  # เช็กตั้งแต่แรก ไม่ต้องรอกรอกครบ
@@ -698,13 +797,35 @@ def dashboard():
     print(f"{'Unpaid Bills':<18}: {summary('PAYMENT')['Unpaid Bills']}")
 
 
+#  call report แทน gen_report
+
+def reports_menu():
+    options = {"1": "Monthly Tenant Billing Report", "2": "Room Type Report",
+               "3": "Tenant Stay & Payment Report", "4": "Full Summary Report (report.txt)",
+               "0": "Back"}
+    while True:
+        choice = menu("REPORTS", options)
+        if choice == "0":
+            return
+        elif choice == "1":
+            run_action(monthly_billing_report_action)
+        elif choice == "2":
+            run_action(room_type_report_action)
+        elif choice == "3":
+            run_action(tenant_history_report_action)
+        else:
+            generate_report()
+
+# 
+
+
 def main_menu():
     try:
         while True:
             dashboard()
             choice = menu("MAIN MENU", {"1": "Tenant Management", "2": "Room Management",
-                                        "3": "Payment Management", "4": "Dormitory Information",
-                                        "5": "Generate Report", "0": "Exit"})
+                            "3": "Payment Management", "4": "Dormitory Information",
+                            "5": "Generate Report", "0": "Exit"})
             if choice == "0":
                 break
             elif choice == "1":
