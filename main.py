@@ -562,9 +562,9 @@ Total Paid   : {total_paid:.2f}""")
 
 # ============= 7) เมนู Add / Update / Delete / View ============= #
 def add_room():
-    room_id = ask_text("Room ID: ", 10)
-    check_new_id("ROOM", room_id)  # เช็กตั้งแต่แรก ไม่ต้องรอกรอกครบ
-    room_type = ask_int_text("Room type: ", 20)
+    room_id = ask_int_text("Room ID: ", 10)
+    check_new_id("ROOM", room_id)
+    room_type = ask_text("Room type: ", 20)
     rent = ask_amount("Monthly rent: ")
     water_rate = ask_amount("Water rate: ")
     electric_rate = ask_amount("Electric rate: ")
@@ -573,10 +573,10 @@ def add_room():
 
 
 def update_room():
-    slot, room = get_record("ROOM", ask_text("Room ID: ", 10))
+    slot, room = get_record("ROOM", ask_int_text("Room ID: ", 10))
     show_one(room)
     print("Leave a field blank to keep its current value.")
-    room_type = ask_int_text("Room type: ", 20, optional=True)
+    room_type = ask_text("Room type: ", 20, optional=True)
     rent = ask_amount("Monthly rent: ", optional=True)
     water_rate = ask_amount("Water rate: ", optional=True)
     electric_rate = ask_amount("Electric rate: ", optional=True)
@@ -824,8 +824,8 @@ def main_menu():
         while True:
             dashboard()
             choice = menu("MAIN MENU", {"1": "Tenant Management", "2": "Room Management",
-                            "3": "Payment Management", "4": "Dormitory Information",
-                            "5": "Generate Report", "0": "Exit"})
+                "3": "Payment Management", "4": "Dormitory Information",
+                "5": "Reports", "0": "Exit"})
             if choice == "0":
                 break
             elif choice == "1":
@@ -837,7 +837,8 @@ def main_menu():
             elif choice == "4":
                 dormitory_information()
             else:
-                generate_report()
+                reports_menu()
+    
     except (EOFError, KeyboardInterrupt):  # กด Ctrl+C / Ctrl+D = ออกอย่างปลอดภัย
         print("\nExit requested.")
     print("Every completed write was already flushed and synced to disk.")

@@ -1,6 +1,6 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-09-29 15:43:27 (+07:00)
+Generated At : 2026-09-30 21:28:50 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -8,91 +8,57 @@ Encoding     : UTF-8 (with fixed-size byte fields)
 ====================================================================================================
 ROOM RECORDS
 
-Room ID | Type     | Rent    | Water Rate | Electric Rate | Status    | Tenant | Record Status
---------+----------+---------+------------+---------------+-----------+--------+--------------
-A101    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T001   | ACTIVE       
-A102    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T002   | ACTIVE       
-A103    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T003   | ACTIVE       
-A104    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T004   | ACTIVE       
-A105    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T005   | ACTIVE       
-A106    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T006   | ACTIVE       
-A107    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T007   | ACTIVE       
-A108    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T008   | ACTIVE       
-A109    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T009   | ACTIVE       
-A110    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T010   | ACTIVE       
-A201    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T011   | ACTIVE       
-A202    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T012   | ACTIVE       
-A203    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T013   | ACTIVE       
-A204    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T014   | ACTIVE       
-A205    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T015   | ACTIVE       
-A206    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T016   | ACTIVE       
-A207    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T017   | ACTIVE       
-A208    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T018   | ACTIVE       
-A209    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T019   | ACTIVE       
-A210    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T020   | ACTIVE       
-B101    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T021   | ACTIVE       
-B102    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T022   | ACTIVE       
-B103    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T023   | ACTIVE       
-B104    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T024   | ACTIVE       
-B105    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T025   | ACTIVE       
-B106    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T026   | ACTIVE       
-B107    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T027   | ACTIVE       
-B108    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T028   | ACTIVE       
-B109    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T029   | ACTIVE       
-B110    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T030   | ACTIVE       
-B201    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T031   | ACTIVE       
-B202    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T032   | ACTIVE       
-B203    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T033   | ACTIVE       
-B204    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T034   | ACTIVE       
-B205    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T035   | ACTIVE       
-B206    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T036   | ACTIVE       
-B207    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T037   | ACTIVE       
-B208    | Standard | 3500.00 | 18.00      | 7.00          | OCCUPIED  | T038   | ACTIVE       
-B209    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-B210    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C101    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C102    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C103    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C104    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C105    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C106    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C107    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C108    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C109    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | ACTIVE       
-C110    | Standard | 3500.00 | 18.00      | 7.00          | AVAILABLE |        | DELETED      
+Room ID | Type   | Rent    | Water Rate | Electric Rate | Status   | Tenant | Record Status
+--------+--------+---------+------------+---------------+----------+--------+--------------
+101     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED | 1      | ACTIVE       
+102     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED | 2      | ACTIVE       
+103     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED | 3      | ACTIVE       
+104     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED | 4      | ACTIVE       
+105     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED | 5      | ACTIVE       
+106     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED | 6      | ACTIVE       
+107     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED | 7      | ACTIVE       
+108     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED | 8      | ACTIVE       
+109     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED | 9      | ACTIVE       
+110     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED | 10     | ACTIVE       
+111     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED | 11     | ACTIVE       
+112     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED | 12     | ACTIVE       
+113     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED | 13     | ACTIVE       
+114     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED | 14     | ACTIVE       
+115     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED | 15     | ACTIVE       
+116     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED | 16     | ACTIVE       
 
 ====================================================================================================
 ROOM SUMMARY
 
-- Total Records     : 50
-- Active Records    : 49
-- Deleted Records   : 1
-- Free Slots        : [49]
-- Active Rooms      : 49
-- Occupied Rooms    : 38
-- Available Rooms   : 11
+- Total Records     : 16
+- Active Records    : 16
+- Deleted Records   : 0
+- Free Slots        : []
+- Active Rooms      : 16
+- Occupied Rooms    : 16
+- Available Rooms   : 0
 
 ====================================================================================================
 TENANT SUMMARY
 
-- Total Records     : 39
-- Active Records    : 38
-- Deleted Records   : 1
-- Free Slots        : [38]
-- Active Tenants    : 38
+- Total Records     : 16
+- Active Records    : 16
+- Deleted Records   : 0
+- Free Slots        : []
+- Active Tenants    : 16
 
 ====================================================================================================
 PAYMENT SUMMARY
 
-- Total Records     : 77
-- Active Records    : 76
-- Deleted Records   : 1
-- Free Slots        : [76]
-- Paid Bills        : 50
-- Unpaid Bills      : 26
-- Total Amount      : 329430.00
-- Paid Amount       : 217057.00
-- Unpaid Amount     : 112373.00
+- Total Records     : 32
+- Active Records    : 32
+- Deleted Records   : 0
+- Free Slots        : []
+- Paid Bills        : 16
+- Unpaid Bills      : 16
+- Total Amount      : 160384.00
+- Paid Amount       : 79440.00
+- Unpaid Amount     : 80944.00
 
 Amounts and status counts include active records only.
 Total Records counts physical slots, including deleted records.
