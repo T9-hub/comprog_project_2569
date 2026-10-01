@@ -458,6 +458,18 @@ def generate_report():
 
 
 
+# ============================================================
+BILLING_REPORT_PATH = os.path.join(BASE_DIR, "billing_report.txt")
+ROOMTYPE_REPORT_PATH = os.path.join(BASE_DIR, "room_type_report.txt")
+TENANT_REPORT_PATH = os.path.join(BASE_DIR, "tenant_report.txt")
+
+
+def write_lines_to_file(path, lines):
+    """เขียน lines ลงไฟล์ .txt แยกต่างหาก (เขียนทับของเดิมทุกครั้งที่กด ไม่ยุ่งกับ report.txt)"""
+    with open(path, "w", encoding="utf-8") as file:
+        file.write("\n".join(lines) + "\n")
+
+
 
 # ============================================================ 6.5) รายงานตามที่อาจารย์ขอ
 def print_table(rows, headers, keys):
@@ -492,9 +504,12 @@ def monthly_billing_report_action():
     rows, grand_total = report_monthly_billing(month)
     headers = ["Tenant ID", "Name", "Room", "Rent", "Water", "Electric", "Total"]
     keys = ["tenant_id", "name", "room_id", "room_rent", "water_cost", "electric_cost", "total"]
-    print(f"\nMONTHLY TENANT BILLING REPORT - {month}\n")
-    print("\n".join(print_table(rows, headers, keys)))
-    print(f"\nGrand Total ({month}): {grand_total:.2f}  |  Records: {len(rows)}")
+    lines = [f"MONTHLY TENANT BILLING REPORT - {month}", ""]
+    lines += print_table(rows, headers, keys)
+    lines += ["", f"Grand Total ({month}): {grand_total:.2f}  |  Records: {len(rows)}"]
+    print("\n" + "\n".join(lines))
+    write_lines_to_file(BILLING_REPORT_PATH, lines)
+    print(f"\nSaved to {BILLING_REPORT_PATH}")
 
 
 # ---------- Report 2: แต่ละประเภทห้อง มีใครอยู่บ้าง ----------
@@ -510,15 +525,19 @@ def report_by_room_type():
 
 def room_type_report_action():
     by_type = report_by_room_type()
-    print("\nROOM TYPE REPORT\n")
+    lines = ["ROOM TYPE REPORT", ""]
     if not by_type:
-        print("No rooms found.")
-        return
-    headers = ["Room ID", "Status", "Tenant"]
-    keys = ["room_id", "status", "tenant_name"]
-    for room_type, rooms in by_type.items():
-        print(f"Room Type: {room_type}  ({len(rooms)} rooms)")
-        print("\n".join(print_table(rooms, headers, keys)) + "\n")
+        lines.append("No rooms found.")
+    else:
+        headers = ["Room ID", "Status", "Tenant"]
+        keys = ["room_id", "status", "tenant_name"]
+        for room_type, rooms in by_type.items():
+            lines.append(f"Room Type: {room_type}  ({len(rooms)} rooms)")
+            lines += print_table(rooms, headers, keys)
+            lines.append("")
+    print("\n" + "\n".join(lines))
+    write_lines_to_file(ROOMTYPE_REPORT_PATH, lines)
+    print(f"Saved to {ROOMTYPE_REPORT_PATH}")
 
 
 # ---------- Report 3: อยู่มากี่เดือน จ่ายไปแล้วเท่าไหร่ ----------
@@ -539,26 +558,24 @@ def report_tenant_history(tenant_id):
 def tenant_history_report_action():
     tenant_id = ask_int_text("Tenant ID: ", 10)
     tenant, months, total_paid, bill_count = report_tenant_history(tenant_id)
-    print(f"""
-TENANT STAY & PAYMENT REPORT
+    lines = [
+        "TENANT STAY & PAYMENT REPORT", "",
+        f"Tenant ID    : {tenant['tenant_id']}",
+        f"Name         : {tenant['name']}",
+        f"Room         : {tenant['room_id']}",
+        f"Status       : {tenant['status']}",
+        f"Months Stayed: {months}",
+        f"Bills Paid   : {bill_count}",
+        f"Total Paid   : {total_paid:.2f}",
+    ]
+    print("\n" + "\n".join(lines))
+    write_lines_to_file(TENANT_REPORT_PATH, lines)
+    print(f"\nSaved to {TENANT_REPORT_PATH}")
 
-Tenant ID    : {tenant['tenant_id']}
-Name         : {tenant['name']}
-Room         : {tenant['room_id']}
-Status       : {tenant['status']}
-Months Stayed: {months}
-Bills Paid   : {bill_count}
-Total Paid   : {total_paid:.2f}""")
 
-
-
-
-
-
+# ============= =============
 
 # function REPORT
-
-
 
 # ============= 7) เมนู Add / Update / Delete / View ============= #
 def add_room():
