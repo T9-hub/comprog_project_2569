@@ -1,9 +1,11 @@
 TENANT STAY & PAYMENT REPORT
 
-Tenant ID    : 5
-Name         : ประยุทธ์
-Room         : 105
+Tenant ID    : 10
+Name         : พรทิพย์
+Room         : 110
 Status       : ACTIVE
-Months Stayed: 7
+Months Stayed: 6
 Bills Paid   : 2
-Total Paid   : 16180.00
+Total Paid   : 13180.00
+Bills Unpaid : 1
+Total Unpaid : 6590.00

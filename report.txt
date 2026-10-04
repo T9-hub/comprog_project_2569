@@ -1,6 +1,6 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-10-05 00:02:47 (+07:00)
+Generated At : 2026-10-05 02:09:43 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -13,7 +13,7 @@ Room ID | Type   | Rent    | Water Rate | Electric Rate | Status    | Tenant | R
 101     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 1      | ACTIVE       
 102     | Double | 4000.00 | 18.00      | 8.00          | AVAILABLE |        | ACTIVE       
 103     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 3      | ACTIVE       
-104     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 4      | ACTIVE       
+104     | Deluxe | 6000.00 | 18.00      | 8.00          | AVAILABLE |        | ACTIVE       
 105     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 5      | ACTIVE       
 106     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 6      | ACTIVE       
 107     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 7      | ACTIVE       
@@ -58,17 +58,17 @@ ROOM SUMMARY
 - Deleted Records   : 2
 - Free Slots        : [37, 38]
 - Active Rooms      : 37
-- Occupied Rooms    : 35
-- Available Rooms   : 2
+- Occupied Rooms    : 34
+- Available Rooms   : 3
 
 ====================================================================================================
 TENANT SUMMARY
 
 - Total Records     : 36
-- Active Records    : 35
-- Deleted Records   : 1
-- Free Slots        : [1]
-- Active Tenants    : 35
+- Active Records    : 34
+- Deleted Records   : 2
+- Free Slots        : [1, 3]
+- Active Tenants    : 34
 
 ====================================================================================================
 PAYMENT SUMMARY

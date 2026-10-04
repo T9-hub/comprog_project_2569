@@ -501,7 +501,7 @@ def print_table(rows, headers, keys):
 
 # ---------- Report 1: ค่าเช่า/น้ำ/ไฟ ของผู้เช่าทุกคน รายเดือน ----------
 def report_monthly_billing(month):
-    tenants = {t["tenant_id"]: t["name"] for t in read_all("TENANT")}
+    tenants = {r["tenant_id"]: r["name"] for slot, r in read_all("TENANT")}
     rows = []
     for p in active_records("PAYMENT"):
         if p["billing_month"] != month:
