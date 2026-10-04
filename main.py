@@ -269,6 +269,16 @@ def get_record(kind, record_id):
     raise ValueError(f"{kind.title()} ID not found: {record_id}.")
 
 
+def find_any(kind, record_id):
+    """หา record ไม่ว่าจะ active หรือถูกลบไปแล้ว คืน record หรือ None (ไว้ใช้กับรายงานย้อนหลัง)"""
+    id_field = SCHEMAS[kind][2][0][0]
+    for slot, record in read_all(kind):
+        if record[id_field] == record_id:
+            return record
+    return None
+
+
+
 def check_new_id(kind, record_id):
     """ID ใหม่ต้องไม่ซ้ำ และห้ามใช้ ID ที่ใบเสร็จเก่ายังอ้างอิงอยู่"""
     try:
@@ -282,6 +292,10 @@ def check_new_id(kind, record_id):
         for payment in active_records("PAYMENT"):
             if payment[field] == record_id:
                 raise ValueError(f"ID {record_id} is used by past payments and cannot be reused.")
+
+
+
+
 
 
 # ============================================================ 4) ตรรกะหลัก (ไม่มี input จึงใช้ซ้ำใน seed_data.py ได้)
@@ -487,7 +501,7 @@ def print_table(rows, headers, keys):
 
 # ---------- Report 1: ค่าเช่า/น้ำ/ไฟ ของผู้เช่าทุกคน รายเดือน ----------
 def report_monthly_billing(month):
-    tenants = {t["tenant_id"]: t["name"] for t in active_records("TENANT")}
+    tenants = {t["tenant_id"]: t["name"] for t in read_all("TENANT")}
     rows = []
     for p in active_records("PAYMENT"):
         if p["billing_month"] != month:
@@ -542,7 +556,9 @@ def room_type_report_action():
 
 # ---------- Report 3: อยู่มากี่เดือน จ่ายไปแล้วเท่าไหร่ ----------
 def report_tenant_history(tenant_id):
-    tenant = get_record("TENANT", tenant_id)[1]
+    tenant = find_any("TENANT", tenant_id)
+    if tenant is None:
+        raise ValueError(f"Tenant ID not found: {tenant_id}.")
     start = datetime.datetime.strptime(tenant["contract_start"], "%Y-%m-%d").date()
     end = (datetime.date.today() if tenant["status"] == "ACTIVE" else
            datetime.datetime.strptime(tenant["contract_end"], "%Y-%m-%d").date())
@@ -550,14 +566,15 @@ def report_tenant_history(tenant_id):
     if end.day < start.day:
         months -= 1
     months = max(months, 0)
-    paid = [p["total"] for p in active_records("PAYMENT")
-            if p["tenant_id"] == tenant_id and p["status"] == "PAID"]
-    return tenant, months, sum(paid), len(paid)
+    bills = [p for p in active_records("PAYMENT") if p["tenant_id"] == tenant_id]
+    paid = [p["total"] for p in bills if p["status"] == "PAID"]
+    unpaid = [p["total"] for p in bills if p["status"] == "UNPAID"]
+    return tenant, months, sum(paid), len(paid), sum(unpaid), len(unpaid)
 
 
 def tenant_history_report_action():
     tenant_id = ask_int_text("Tenant ID: ", 10)
-    tenant, months, total_paid, bill_count = report_tenant_history(tenant_id)
+    tenant, months, paid_total, paid_count, unpaid_total, unpaid_count = report_tenant_history(tenant_id)
     lines = [
         "TENANT STAY & PAYMENT REPORT", "",
         f"Tenant ID    : {tenant['tenant_id']}",
@@ -565,8 +582,10 @@ def tenant_history_report_action():
         f"Room         : {tenant['room_id']}",
         f"Status       : {tenant['status']}",
         f"Months Stayed: {months}",
-        f"Bills Paid   : {bill_count}",
-        f"Total Paid   : {total_paid:.2f}",
+        f"Bills Paid   : {paid_count}",
+        f"Total Paid   : {paid_total:.2f}",
+        f"Bills Unpaid : {unpaid_count}",
+        f"Total Unpaid : {unpaid_total:.2f}",
     ]
     print("\n" + "\n".join(lines))
     write_lines_to_file(TENANT_REPORT_PATH, lines)
