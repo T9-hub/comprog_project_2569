@@ -1,0 +1,9 @@
+TENANT STAY & PAYMENT REPORT
+
+Tenant ID    : 5
+Name         : ประยุทธ์
+Room         : 105
+Status       : ACTIVE
+Months Stayed: 7
+Bills Paid   : 2
+Total Paid   : 16180.00

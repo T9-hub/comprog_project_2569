@@ -1,0 +1,63 @@
+ROOM TYPE REPORT
+
+Room Type: Single  (7 rooms)
+Room ID | Status    | Tenant
+--------+-----------+-------
+101     | OCCUPIED  | สมชาย 
+107     | OCCUPIED  | ธนกร  
+113     | OCCUPIED  | อนุชา 
+119     | OCCUPIED  | สุนีย์
+125     | OCCUPIED  | ปิยะ  
+131     | OCCUPIED  | กิตติ 
+137     | AVAILABLE | -     
+
+Room Type: Double  (6 rooms)
+Room ID | Status    | Tenant
+--------+-----------+-------
+102     | AVAILABLE | -     
+108     | OCCUPIED  | กัลยา 
+114     | OCCUPIED  | รัตนา 
+120     | OCCUPIED  | ประภาส
+126     | OCCUPIED  | จิราพร
+132     | OCCUPIED  | นงนุช 
+
+Room Type: Twin  (6 rooms)
+Room ID | Status   | Tenant   
+--------+----------+----------
+103     | OCCUPIED | วิชัย    
+109     | OCCUPIED | ชัยวัฒน์ 
+115     | OCCUPIED | ธีรพงษ์  
+121     | OCCUPIED | มาลี     
+127     | OCCUPIED | วีระ     
+133     | OCCUPIED | ศักดิ์ชัย
+
+Room Type: Deluxe  (6 rooms)
+Room ID | Status    | Tenant    
+--------+-----------+-----------
+104     | AVAILABLE | -         
+110     | OCCUPIED  | พรทิพย์   
+116     | OCCUPIED  | จันทร์เพ็ญ
+122     | OCCUPIED  | เอกชัย    
+128     | OCCUPIED  | สุดา      
+134     | OCCUPIED  | ลัดดา     
+
+Room Type: Suite  (6 rooms)
+Room ID | Status   | Tenant   
+--------+----------+----------
+105     | OCCUPIED | ประยุทธ์ 
+111     | OCCUPIED | สุรชัย   
+117     | OCCUPIED | วรรณา    
+123     | OCCUPIED | ดวงใจ    
+129     | OCCUPIED | ธวัชชัย  
+135     | OCCUPIED | ภาณุวัฒน์
+
+Room Type: Studio  (6 rooms)
+Room ID | Status   | Tenant  
+--------+----------+---------
+106     | OCCUPIED | มณีรัตน์
+112     | OCCUPIED | นิภา    
+118     | OCCUPIED | ไพโรจน์ 
+124     | OCCUPIED | สมบูรณ์ 
+130     | OCCUPIED | อำไพ    
+136     | OCCUPIED | เพ็ญศรี 
+
