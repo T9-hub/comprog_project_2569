@@ -12,7 +12,7 @@ for kind in SCHEMAS:
 ROOM_TYPES = [("Single", 3000.0), ("Double", 4000.0), ("Twin", 4500.0),
               ("Deluxe", 6000.0), ("Suite", 7500.0), ("Studio", 5000.0)]
 rooms = []
-for i in range(1, 37):
+for i in range(1, 39):
     room_id = str(100 + i)
     room_type, rent = ROOM_TYPES[(i - 1) % len(ROOM_TYPES)]
     create_room(room_id, room_type, rent, 18.0, 8.0)
@@ -27,7 +27,7 @@ NAMES = ["สมชาย", "สมหญิง", "วิชัย", "อรท�
 START_DATES = ["2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01"]
 
 tenants = []
-for i, room_id in enumerate(rooms, start=1):
+for i, room_id in enumerate(rooms[:36], start=1):
     tenant_id = str(i)
     student_id = str(6400000 + i)
     phone = str(800000000 + i)
