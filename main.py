@@ -406,12 +406,25 @@ def table_lines(records, kind, show_status=False):
 
 
 def format_table(header, rows):
-    """Keep column widths consistent for all tables, including Thai text."""
+    """Place shaped Unicode text last so it cannot shift later columns."""
+    text_columns = [i for i, title in enumerate(header)
+                    if title in ("Name", "Tenant", "Type") and
+                    (title == "Name" or any(not row[i].isascii() for row in rows))]
+    text_columns += [i for i in range(len(header)) if i not in text_columns
+                     and any(not row[i].isascii() for row in rows)]
+    if text_columns:
+        fixed_columns = [i for i in range(len(header)) if i not in text_columns]
+        text_title = header[text_columns[0]] if len(text_columns) == 1 else "Details"
+        rows = [[row[i] for i in fixed_columns] +
+                [row[text_columns[0]] if len(text_columns) == 1 else
+                 "; ".join(f"{header[i]}: {row[i]}" for i in text_columns)]
+                for row in rows]
+        header = [header[i] for i in fixed_columns] + [text_title]
     widths = [max(visual_width(cell) for cell in column) for column in zip(header, *rows)]
-    lines = [" | ".join(visual_ljust(c, w) for c, w in zip(header, widths)),
+    lines = [" | ".join(visual_ljust(c, w) for c, w in zip(header, widths)).rstrip(),
              "-+-".join("-" * w for w in widths)]
     for row in rows:
-        lines.append(" | ".join(visual_ljust(c, w) for c, w in zip(row, widths)))
+        lines.append(" | ".join(visual_ljust(c, w) for c, w in zip(row, widths)).rstrip())
     return lines
 
 
@@ -655,6 +668,95 @@ def tenant_history_report_action():
 
 # ============= =============
 
+# ============= แอดหลายรายการในครั้งเดียว ============= #
+def ask_yes_no(prompt):
+    while True:
+        text = input(f"{prompt} (y/n): ").strip().lower()
+        if text in ("y", "yes"):
+            return True
+        if text in ("n", "no"):
+            return False
+        print("ERROR: Please enter y or n.")
+
+
+def repeat_add(label, add_one):
+    """เรียกฟังก์ชัน add_one ซ้ำจนกว่าผู้ใช้จะตอบ n
+    ถ้ารายการไหนผิดกติกา (ValueError) แจ้งแล้วถามต่อ รายการที่เพิ่มไปแล้วยังอยู่ครบ"""
+    added = 0
+    while True:
+        try:
+            add_one()
+            added += 1
+        except ValueError as error:
+            print(f"ERROR: {error}")
+        if not ask_yes_no(f"Add another {label}?"):
+            break
+    print(f"Done. {added} {label}(s) added.")
+
+
+def add_rooms_range():
+    """เพิ่มห้องเป็นช่วง เช่น 101-110 โดยใช้ประเภท/ราคาเดียวกันทั้งหมด"""
+    first_text = ask_int_text("First Room ID: ", 10)
+    last_text = ask_int_text("Last Room ID: ", 10)
+    first, last = int(first_text), int(last_text)
+    if last < first:
+        raise ValueError("Last Room ID must not be less than the first.")
+    if last - first + 1 > 200:
+        raise ValueError("Too many rooms at once (maximum 200).")
+    width = len(first_text)  # รักษาเลข 0 นำหน้า เช่น 0101
+    room_ids = [str(n).zfill(width) for n in range(first, last + 1)]
+
+    room_type = ask_text("Room type (same for all): ", 20)
+    rent = ask_amount("Monthly rent: ")
+    water_rate = ask_amount("Water rate: ")
+    electric_rate = ask_amount("Electric rate: ")
+
+    for room_id in room_ids:  # ตรวจ ID ซ้ำให้ครบก่อน ถ้าซ้ำสักห้อง = ไม่เขียนอะไรเลย
+        check_new_id("ROOM", room_id)
+    for room_id in room_ids:
+        create_room(room_id, room_type, rent, water_rate, electric_rate)
+    print(f"{len(room_ids)} rooms added ({room_ids[0]} - {room_ids[-1]}).")
+
+
+def next_payment_id():
+    ids = [int(r["payment_id"]) for slot, r in read_all("PAYMENT")
+           if r["payment_id"].isdigit()]
+    return str(max(ids, default=0) + 1)
+
+
+def add_monthly_bills_for_all():
+    """ออกบิลของเดือนหนึ่งให้ผู้เช่า ACTIVE ทุกคนที่ยังไม่มีบิลเดือนนั้น"""
+    month = ask_month("Billing month (YYYY-MM): ")
+    billed = {p["tenant_id"] for p in active_records("PAYMENT")
+              if p["billing_month"] == month}
+    tenants = [t for t in active_records("TENANT")
+               if t["status"] == "ACTIVE" and t["tenant_id"] not in billed]
+    if not tenants:
+        print("No tenants need a bill for this month.")
+        return
+    print(f"{len(tenants)} tenant(s) to bill. Leave water units blank to skip a tenant.")
+    count = 0
+    for tenant in tenants:
+        print(f"\nTenant {tenant['tenant_id']} - {show_value(tenant['name'])} "
+              f"(Room {tenant['room_id']})")
+        water = ask_amount("  Water units (blank = skip): ", optional=True)
+        if water is None:
+            continue
+        electric = ask_amount("  Electric units: ")
+        fine = ask_amount("  Fine: ")
+        damage = ask_amount("  Damage fee: ")
+        try:
+            payment = create_payment(next_payment_id(), tenant["tenant_id"], month,
+                                     water, electric, fine, damage)
+            count += 1
+            print(f"  Bill {payment['payment_id']} added. Total: {payment['total']:.2f}")
+        except ValueError as error:
+            print(f"  ERROR: {error}")
+    print(f"\nDone. {count} bill(s) created.")
+
+
+# ============= =============
+
 # function REPORT
 
 # ============= 7) เมนู Add / Update / Delete / View ============= #
@@ -845,21 +947,26 @@ def management_menu(kind):
                "2": f"Update {name}", "3": f"Delete {name}", "4": f"View {name}"}
     if kind == "PAYMENT":
         options["5"] = "Mark as Paid"
+        options["6"] = "Add Bills for All Tenants (one month)"
+    elif kind == "ROOM":
+        options["5"] = "Add Multiple Rooms (ID range)"
     options["0"] = "Back"
     while True:
         choice = menu(f"{kind} MANAGEMENT", options)
         if choice == "0":
             return
         elif choice == "1":
-            run_action(adders[kind])
+            run_action(repeat_add, name, adders[kind])
         elif choice == "2":
             run_action(updaters[kind])
         elif choice == "3":
             run_action(delete_one, kind)
         elif choice == "4":
             view_menu(kind)
-        else:
-            run_action(mark_paid)
+        elif choice == "5":
+            run_action(add_rooms_range if kind == "ROOM" else mark_paid)
+        else:  # "6" (มีเฉพาะ PAYMENT)
+            run_action(add_monthly_bills_for_all)
 
 
 def dormitory_information():
