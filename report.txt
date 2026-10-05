@@ -1,6 +1,6 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-10-05 11:29:41 (+07:00)
+Generated At : 2026-10-05 11:51:29 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -56,7 +56,6 @@ ROOM SUMMARY
 - Total Records     : 39
 - Active Records    : 37
 - Deleted Records   : 2
-- Free Slots        : [37, 38]
 - Active Rooms      : 37
 - Occupied Rooms    : 34
 - Available Rooms   : 3
@@ -67,7 +66,6 @@ TENANT SUMMARY
 - Total Records     : 36
 - Active Records    : 34
 - Deleted Records   : 2
-- Free Slots        : [1, 3]
 - Active Tenants    : 34
 
 ====================================================================================================
@@ -76,7 +74,6 @@ PAYMENT SUMMARY
 - Total Records     : 108
 - Active Records    : 108
 - Deleted Records   : 0
-- Free Slots        : []
 - Paid Bills        : 72
 - Unpaid Bills      : 36
 - Total Amount      : 603720.00
@@ -85,7 +82,6 @@ PAYMENT SUMMARY
 
 Amounts and status counts include active records only.
 Total Records counts physical slots, including deleted records.
-Free Slots lists zero-based reusable record numbers.
 
 RECENT OPERATIONS (current session, latest 20)
 ------------------------------------------------------------

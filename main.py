@@ -355,28 +355,30 @@ def pay_bill(payment_id):
 
 
 def remove_record(kind, record_id):
-    """ลบแบบ logical: แค่ตั้ง active = False (slot จะถูกใช้ซ้ำภายหลัง)"""
+    """Delete a record logically and free its room when a tenant moves out."""
     slot, record = get_record(kind, record_id)
     if kind == "ROOM" and record["status"] == "OCCUPIED":
         raise ValueError("An occupied room cannot be deleted.")
-    if kind == "TENANT":  # ผู้เช่าย้ายออก -> ห้องกลับมาว่าง
+    if kind == "TENANT":
         try:
             room_slot, room = get_record("ROOM", record["room_id"])
+        except ValueError:
+            pass
+        else:
             if room["tenant_id"] == record_id:
                 room["status"] = "AVAILABLE"
                 room["tenant_id"] = ""
                 save_slot("ROOM", room_slot, room)
-        except ValueError:
-            pass  # ห้องไม่อยู่แล้ว ไม่ต้องทำอะไร
         record["status"] = "MOVED_OUT"
     record["active"] = False
     save_slot(kind, slot, record)
     log(f"DELETE {kind} {record_id}")
 
 
-# ============================================================ 5) แสดงผล
 def show_value(value):
-    return f"{value:.2f}" if isinstance(value, float) else str(value)
+    text = f"{value:.2f}" if isinstance(value, float) else str(value)
+    return "".join(" " if unicodedata.category(char).startswith("C") else char
+                   for char in text)
 
 
 def visual_width(text):
@@ -387,12 +389,8 @@ def visual_width(text):
 
 def visual_ljust(text, width):
     return text + " " * max(0, width - visual_width(text))
-
-
-
-
-
-
+    
+    
 def table_lines(records, kind, show_status=False):
     """สร้างตารางข้อความ (list ของบรรทัด) จาก list ของ record"""
     header = [title for title, field in COLUMNS[kind]]
@@ -404,14 +402,17 @@ def table_lines(records, kind, show_status=False):
         if show_status:
             row.append("ACTIVE" if record["active"] else "DELETED")
         rows.append(row)
+    return format_table(header, rows)
+
+
+def format_table(header, rows):
+    """Keep column widths consistent for all tables, including Thai text."""
     widths = [max(visual_width(cell) for cell in column) for column in zip(header, *rows)]
-    lines = [" | ".join(visual_ljust(h, w) for h, w in zip(header, widths)),
+    lines = [" | ".join(visual_ljust(c, w) for c, w in zip(header, widths)),
              "-+-".join("-" * w for w in widths)]
     for row in rows:
         lines.append(" | ".join(visual_ljust(c, w) for c, w in zip(row, widths)))
     return lines
-
-
 
 
 def show_records(records, kind):
@@ -433,7 +434,7 @@ def summary(kind):
     everything = read_all(kind)
     active = [record for slot, record in everything if record["active"]]
     data = {"Total Records": len(everything), "Active Records": len(active),
-            "Deleted Records": len(everything) - len(active), "Free Slots": free_slots(kind)}
+            "Deleted Records": len(everything) - len(active)}
     if kind == "ROOM":
         occupied = len([r for r in active if r["status"] == "OCCUPIED"])
         data["Active Rooms"] = len(active)
@@ -458,25 +459,13 @@ def summary_lines(data):
 
 # ============================================================ 6) รายงาน .txt
 def write_report():
-    now = datetime.datetime.now().astimezone()
-    offset = now.strftime("%z")  # เช่น +0700 -> +07:00
     bar = "=" * 100
-    lines = ["STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report", "",
-             f"Generated At : {now:%Y-%m-%d %H:%M:%S} ({offset[:3]}:{offset[3:]})",
-             f"App Version  : {APP_VERSION}", "Endianness   : Little-Endian",
-             "Encoding     : UTF-8 (with fixed-size byte fields)", "",
-             bar, "ROOM RECORDS", ""]
+    lines = ["ROOM RECORDS", ""]
     lines += table_lines([r for slot, r in read_all("ROOM")], "ROOM", show_status=True)
     for title, kind in (("ROOM SUMMARY", "ROOM"), ("TENANT SUMMARY", "TENANT"),
                         ("PAYMENT SUMMARY", "PAYMENT")):
         lines += ["", bar, title, ""] + summary_lines(summary(kind))
-    lines += ["", "Amounts and status counts include active records only.",
-              "Total Records counts physical slots, including deleted records.",
-              "Free Slots lists zero-based reusable record numbers.", "",
-              "RECENT OPERATIONS (current session, latest 20)", "-" * 60]
-    lines += history or ["No operations in this session."]
-    with open(REPORT_PATH, "w", encoding="utf-8") as file:
-        file.write("\n".join(lines) + "\n")
+    write_lines_to_file(REPORT_PATH, lines)
 
 
 def generate_report():
@@ -497,8 +486,22 @@ TENANT_REPORT_PATH = os.path.join(BASE_DIR, "tenant_report.txt")
 
 def write_lines_to_file(path, lines):
     """เขียน lines ลงไฟล์ .txt แยกต่างหาก (เขียนทับของเดิมทุกครั้งที่กด ไม่ยุ่งกับ report.txt)"""
-    with open(path, "w", encoding="utf-8") as file:
+    lines = report_document(lines)
+    with open(path, "w", encoding="utf-8", newline="\n") as file:
         file.write("\n".join(lines) + "\n")
+
+
+def report_document(body):
+    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=7)))
+    bar = "=" * max(100, max((visual_width(line) for line in body), default=0))
+    header = ["STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report", "",
+              f"Generated At : {now:%Y-%m-%d %H:%M:%S} (+07:00)",
+              f"App Version  : {APP_VERSION}", "Endianness   : Little-Endian",
+              "Encoding     : UTF-8 (with fixed-size byte fields)", "", bar, ""]
+    footer = ["", bar, "Amounts and status counts include active records only.",
+              "Total Records counts physical slots, including deleted records.", "",
+              "RECENT OPERATIONS (current session, latest 20)", "-" * 60]
+    return header + body + footer + (history or ["No operations in this session."]) + ["", bar, "END OF REPORT"]
 
 
 
@@ -508,12 +511,7 @@ def print_table(rows, headers, keys):
     if not rows:
         return ["No records found."]
     table = [[show_value(row[k]) for k in keys] for row in rows]
-    widths = [max(visual_width(cell) for cell in column) for column in zip(headers, *table)]
-    lines = [" | ".join(visual_ljust(h, w) for h, w in zip(headers, widths)),
-             "-+-".join("-" * w for w in widths)]
-    for row in table:
-        lines.append(" | ".join(visual_ljust(c, w) for c, w in zip(row, widths)))
-    return lines
+    return format_table(headers, table)
 
 
 # ---------- Report 1: ค่าเช่า/น้ำ/ไฟ ของผู้เช่าทุกคน รายเดือน ----------
@@ -786,7 +784,7 @@ def mark_paid():
 
 def delete_one(kind):
     remove_record(kind, ask_int_text(f"{kind.title()} ID: ", 10))
-    print("Record logically deleted; its slot is now reusable.")
+    print("Record logically deleted.")
 
 
 def view_action(kind, choice):

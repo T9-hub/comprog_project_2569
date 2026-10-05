@@ -1,3 +1,12 @@
+STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
+
+Generated At : 2026-10-05 11:48:08 (+07:00)
+App Version  : 1.0
+Endianness   : Little-Endian
+Encoding     : UTF-8 (with fixed-size byte fields)
+
+====================================================================================================
+
 ROOM TYPE REPORT
 
 Room Type: Single  (7 rooms)
@@ -62,3 +71,14 @@ Room ID | Status   | Tenant
 136     | OCCUPIED | เพ็ญศรี 
 
 Summary: 6 room types | 37 rooms total | 34 occupied | 3 available
+
+====================================================================================================
+Amounts and status counts include active records only.
+Total Records counts physical slots, including deleted records.
+
+RECENT OPERATIONS (current session, latest 20)
+------------------------------------------------------------
+No operations in this session.
+
+====================================================================================================
+END OF REPORT

@@ -1,3 +1,12 @@
+STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
+
+Generated At : 2026-10-05 11:48:08 (+07:00)
+App Version  : 1.0
+Endianness   : Little-Endian
+Encoding     : UTF-8 (with fixed-size byte fields)
+
+====================================================================================================
+
 TENANT STAY & PAYMENT REPORT
 
 Tenant ID | Name    | Room | Status    | Months | Paid# | Paid Amt | Unpaid# | Unpaid Amt
@@ -40,3 +49,14 @@ Tenant ID | Name    | Room | Status    | Months | Paid# | Paid Amt | Unpaid# | U
 36        | เพ็ญศรี   | 136  | ACTIVE    | 4      | 2     | 11180.00 | 1       | 5590.00   
 
 Summary: 36 tenants | Total Paid: 402480.00 | Total Unpaid: 201240.00
+
+====================================================================================================
+Amounts and status counts include active records only.
+Total Records counts physical slots, including deleted records.
+
+RECENT OPERATIONS (current session, latest 20)
+------------------------------------------------------------
+No operations in this session.
+
+====================================================================================================
+END OF REPORT

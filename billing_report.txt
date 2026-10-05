@@ -1,3 +1,12 @@
+STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
+
+Generated At : 2026-10-05 11:48:08 (+07:00)
+App Version  : 1.0
+Endianness   : Little-Endian
+Encoding     : UTF-8 (with fixed-size byte fields)
+
+====================================================================================================
+
 MONTHLY TENANT BILLING REPORT - 2026-10
 
 Tenant ID | Name    | Room | Rent    | Water  | Electric | Total  
@@ -40,3 +49,14 @@ Tenant ID | Name    | Room | Rent    | Water  | Electric | Total
 36        | เพ็ญศรี   | 136  | 5000.00 | 270.00 | 320.00   | 5590.00
 
 Grand Total (2026-10): 201240.00  |  Records: 36
+
+====================================================================================================
+Amounts and status counts include active records only.
+Total Records counts physical slots, including deleted records.
+
+RECENT OPERATIONS (current session, latest 20)
+------------------------------------------------------------
+No operations in this session.
+
+====================================================================================================
+END OF REPORT
