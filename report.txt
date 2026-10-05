@@ -1,11 +1,12 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-10-05 11:51:29 (+07:00)
+Generated At : 2026-10-05 11:54:05 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
 
 ====================================================================================================
+
 ROOM RECORDS
 
 Room ID | Type   | Rent    | Water Rate | Electric Rate | Status    | Tenant | Record Status
@@ -80,9 +81,13 @@ PAYMENT SUMMARY
 - Paid Amount       : 402480.00
 - Unpaid Amount     : 201240.00
 
+====================================================================================================
 Amounts and status counts include active records only.
 Total Records counts physical slots, including deleted records.
 
 RECENT OPERATIONS (current session, latest 20)
 ------------------------------------------------------------
 No operations in this session.
+
+====================================================================================================
+END OF REPORT
