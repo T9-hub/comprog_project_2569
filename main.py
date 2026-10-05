@@ -4,6 +4,7 @@ import os
 import math
 import struct
 import datetime
+import unicodedata
 
 # ============================================================ 1) ค่าคงที่
 APP_VERSION = "1.0"
@@ -378,6 +379,20 @@ def show_value(value):
     return f"{value:.2f}" if isinstance(value, float) else str(value)
 
 
+def visual_width(text):
+    return sum(0 if unicodedata.category(char).startswith("M") else
+               2 if unicodedata.east_asian_width(char) in ("W", "F") else 1
+               for char in text)
+
+
+def visual_ljust(text, width):
+    return text + " " * max(0, width - visual_width(text))
+
+
+
+
+
+
 def table_lines(records, kind, show_status=False):
     """สร้างตารางข้อความ (list ของบรรทัด) จาก list ของ record"""
     header = [title for title, field in COLUMNS[kind]]
@@ -389,12 +404,14 @@ def table_lines(records, kind, show_status=False):
         if show_status:
             row.append("ACTIVE" if record["active"] else "DELETED")
         rows.append(row)
-    widths = [max(len(cell) for cell in column) for column in zip(header, *rows)]
-    lines = [" | ".join(c.ljust(w) for c, w in zip(header, widths)),
+    widths = [max(visual_width(cell) for cell in column) for column in zip(header, *rows)]
+    lines = [" | ".join(visual_ljust(h, w) for h, w in zip(header, widths)),
              "-+-".join("-" * w for w in widths)]
     for row in rows:
-        lines.append(" | ".join(c.ljust(w) for c, w in zip(row, widths)))
+        lines.append(" | ".join(visual_ljust(c, w) for c, w in zip(row, widths)))
     return lines
+
+
 
 
 def show_records(records, kind):
@@ -491,11 +508,11 @@ def print_table(rows, headers, keys):
     if not rows:
         return ["No records found."]
     table = [[show_value(row[k]) for k in keys] for row in rows]
-    widths = [max(len(cell) for cell in column) for column in zip(headers, *table)]
-    lines = [" | ".join(h.ljust(w) for h, w in zip(headers, widths)),
+    widths = [max(visual_width(cell) for cell in column) for column in zip(headers, *table)]
+    lines = [" | ".join(visual_ljust(h, w) for h, w in zip(headers, widths)),
              "-+-".join("-" * w for w in widths)]
     for row in table:
-        lines.append(" | ".join(c.ljust(w) for c, w in zip(row, widths)))
+        lines.append(" | ".join(visual_ljust(c, w) for c, w in zip(row, widths)))
     return lines
 
 
@@ -545,48 +562,94 @@ def room_type_report_action():
     else:
         headers = ["Room ID", "Status", "Tenant"]
         keys = ["room_id", "status", "tenant_name"]
+        total_rooms = 0
+        total_occupied = 0
         for room_type, rooms in by_type.items():
             lines.append(f"Room Type: {room_type}  ({len(rooms)} rooms)")
             lines += print_table(rooms, headers, keys)
             lines.append("")
+            total_rooms += len(rooms)
+            total_occupied += len([r for r in rooms if r["status"] == "OCCUPIED"])
+        lines.append(f"Summary: {len(by_type)} room types | {total_rooms} rooms total | "
+                     f"{total_occupied} occupied | {total_rooms - total_occupied} available")
     print("\n" + "\n".join(lines))
     write_lines_to_file(ROOMTYPE_REPORT_PATH, lines)
     print(f"Saved to {ROOMTYPE_REPORT_PATH}")
 
 
 # ---------- Report 3: อยู่มากี่เดือน จ่ายไปแล้วเท่าไหร่ ----------
-def report_tenant_history(tenant_id):
-    tenant = find_any("TENANT", tenant_id)
-    if tenant is None:
-        raise ValueError(f"Tenant ID not found: {tenant_id}.")
-    start = datetime.datetime.strptime(tenant["contract_start"], "%Y-%m-%d").date()
-    end = (datetime.date.today() if tenant["status"] == "ACTIVE" else
-           datetime.datetime.strptime(tenant["contract_end"], "%Y-%m-%d").date())
-    months = (end.year - start.year) * 12 + (end.month - start.month)
-    if end.day < start.day:
-        months -= 1
-    months = max(months, 0)
-    bills = [p for p in active_records("PAYMENT") if p["tenant_id"] == tenant_id]
-    paid = [p["total"] for p in bills if p["status"] == "PAID"]
-    unpaid = [p["total"] for p in bills if p["status"] == "UNPAID"]
-    return tenant, months, sum(paid), len(paid), sum(unpaid), len(unpaid)
+# def report_tenant_history(tenant_id):
+#     tenant = find_any("TENANT", tenant_id)
+#     if tenant is None:
+#         raise ValueError(f"Tenant ID not found: {tenant_id}.")
+#     start = datetime.datetime.strptime(tenant["contract_start"], "%Y-%m-%d").date()
+#     end = (datetime.date.today() if tenant["status"] == "ACTIVE" else
+#            datetime.datetime.strptime(tenant["contract_end"], "%Y-%m-%d").date())
+#     months = (end.year - start.year) * 12 + (end.month - start.month)
+#     if end.day < start.day:
+#         months -= 1
+#     months = max(months, 0)
+#     bills = [p for p in active_records("PAYMENT") if p["tenant_id"] == tenant_id]
+#     paid = [p["total"] for p in bills if p["status"] == "PAID"]
+#     unpaid = [p["total"] for p in bills if p["status"] == "UNPAID"]
+#     return tenant, months, sum(paid), len(paid), sum(unpaid), len(unpaid)
+
+
+# def tenant_history_report_action():
+#     tenant_id = ask_int_text("Tenant ID: ", 10)
+#     tenant, months, paid_total, paid_count, unpaid_total, unpaid_count = report_tenant_history(tenant_id)
+#     lines = [
+#         "TENANT STAY & PAYMENT REPORT", "",
+#         f"Tenant ID    : {tenant['tenant_id']}",
+#         f"Name         : {tenant['name']}",
+#         f"Room         : {tenant['room_id']}",
+#         f"Status       : {tenant['status']}",
+#         f"Months Stayed: {months}",
+#         f"Bills Paid   : {paid_count}",
+#         f"Total Paid   : {paid_total:.2f}",
+#         f"Bills Unpaid : {unpaid_count}",
+#         f"Total Unpaid : {unpaid_total:.2f}",
+#     ]
+#     print("\n" + "\n".join(lines))
+#     write_lines_to_file(TENANT_REPORT_PATH, lines)
+#     print(f"\nSaved to {TENANT_REPORT_PATH}")
+
+
+def report_all_tenants_history():
+    """รายงาน 3 (ฉบับตาราง): ทุกผู้เช่าที่เคยอยู่ (รวมคนที่ย้ายออกแล้ว)
+    พร้อมจำนวนเดือนที่อยู่ และยอดจ่าย/ค้างจ่าย -> เอาไว้ทำตาราง + สรุปท้าย"""
+    rows = []
+    for slot, tenant in read_all("TENANT"):
+        tenant_id = tenant["tenant_id"]
+        start = datetime.datetime.strptime(tenant["contract_start"], "%Y-%m-%d").date()
+        end = (datetime.date.today() if tenant["status"] == "ACTIVE" else
+               datetime.datetime.strptime(tenant["contract_end"], "%Y-%m-%d").date())
+        months = (end.year - start.year) * 12 + (end.month - start.month)
+        if end.day < start.day:
+            months -= 1
+        months = max(months, 0)
+        bills = [p for p in active_records("PAYMENT") if p["tenant_id"] == tenant_id]
+        paid = [p["total"] for p in bills if p["status"] == "PAID"]
+        unpaid = [p["total"] for p in bills if p["status"] == "UNPAID"]
+        rows.append({"tenant_id": tenant_id, "name": tenant["name"], "room_id": tenant["room_id"],
+                     "status": tenant["status"], "months": months,
+                     "paid_count": len(paid), "paid_total": round(sum(paid), 2),
+                     "unpaid_count": len(unpaid), "unpaid_total": round(sum(unpaid), 2)})
+    return rows
 
 
 def tenant_history_report_action():
-    tenant_id = ask_int_text("Tenant ID: ", 10)
-    tenant, months, paid_total, paid_count, unpaid_total, unpaid_count = report_tenant_history(tenant_id)
-    lines = [
-        "TENANT STAY & PAYMENT REPORT", "",
-        f"Tenant ID    : {tenant['tenant_id']}",
-        f"Name         : {tenant['name']}",
-        f"Room         : {tenant['room_id']}",
-        f"Status       : {tenant['status']}",
-        f"Months Stayed: {months}",
-        f"Bills Paid   : {paid_count}",
-        f"Total Paid   : {paid_total:.2f}",
-        f"Bills Unpaid : {unpaid_count}",
-        f"Total Unpaid : {unpaid_total:.2f}",
-    ]
+    rows = report_all_tenants_history()
+    headers = ["Tenant ID", "Name", "Room", "Status", "Months",
+               "Paid#", "Paid Amt", "Unpaid#", "Unpaid Amt"]
+    keys = ["tenant_id", "name", "room_id", "status", "months",
+            "paid_count", "paid_total", "unpaid_count", "unpaid_total"]
+    lines = ["TENANT STAY & PAYMENT REPORT", ""]
+    lines += print_table(rows, headers, keys)
+    total_paid = sum(r["paid_total"] for r in rows)
+    total_unpaid = sum(r["unpaid_total"] for r in rows)
+    lines += ["", f"Summary: {len(rows)} tenants | Total Paid: {total_paid:.2f} | "
+                  f"Total Unpaid: {total_unpaid:.2f}"]
     print("\n" + "\n".join(lines))
     write_lines_to_file(TENANT_REPORT_PATH, lines)
     print(f"\nSaved to {TENANT_REPORT_PATH}")

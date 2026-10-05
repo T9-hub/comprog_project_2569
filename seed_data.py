@@ -1,7 +1,3 @@
-"""seed_data.py - สร้างข้อมูลตัวอย่างสำหรับสาธิต (รันครั้งเดียวก่อนโชว์อาจารย์)
-รัน: python seed_data.py  (ต้องอยู่โฟลเดอร์เดียวกับ main.py)
-คำเตือน: ถ้ามี data/*.dat อยู่ก่อนแล้ว ให้ลบทิ้งก่อนรันสคริปต์นี้ ไม่งั้น ID จะชนกัน
-"""
 import datetime
 from main import init_file, create_room, create_tenant, create_payment, pay_bill, SCHEMAS
 
