@@ -1,6 +1,6 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-10-05 20:29:31 (+07:00)
+Generated At : 2026-10-06 09:26:01 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -41,14 +41,14 @@ Room ID | Status   | Tenant
 133     | OCCUPIED | ศักดิ์ชัย
 
 Room Type: Deluxe  (6 rooms)
-Room ID | Status    | Tenant
---------+-----------+--------
-104     | AVAILABLE | -
-110     | OCCUPIED  | พรทิพย์
-116     | OCCUPIED  | จันทร์เพ็ญ
-122     | OCCUPIED  | เอกชัย
-128     | OCCUPIED  | สุดา
-134     | OCCUPIED  | ลัดดา
+Room ID | Status   | Tenant
+--------+----------+---------
+104     | OCCUPIED | Thanlrit
+110     | OCCUPIED | พรทิพย์
+116     | OCCUPIED | จันทร์เพ็ญ
+122     | OCCUPIED | เอกชัย
+128     | OCCUPIED | สุดา
+134     | OCCUPIED | ลัดดา
 
 Room Type: Suite  (6 rooms)
 Room ID | Status   | Tenant
@@ -70,7 +70,7 @@ Room ID | Status   | Tenant
 130     | OCCUPIED | อำไพ
 136     | OCCUPIED | เพ็ญศรี
 
-Summary: 6 room types | 37 rooms total | 34 occupied | 3 available
+Summary: 6 room types | 37 rooms total | 35 occupied | 2 available
 
 ====================================================================================================
 Amounts and status counts include active records only.
@@ -78,7 +78,7 @@ Total Records counts physical slots, including deleted records.
 
 RECENT OPERATIONS (current session, latest 20)
 ------------------------------------------------------------
-No operations in this session.
+09:25:41  ADD TENANT 37 -> ROOM 104
 
 ====================================================================================================
 END OF REPORT

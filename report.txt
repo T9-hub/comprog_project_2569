@@ -1,6 +1,6 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-10-06 09:17:28 (+07:00)
+Generated At : 2026-10-06 09:32:18 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -14,7 +14,7 @@ Room ID | Type   | Rent    | Water Rate | Electric Rate | Status    | Tenant | R
 101     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 1      | ACTIVE
 102     | Double | 4000.00 | 18.00      | 8.00          | AVAILABLE |        | ACTIVE
 103     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 3      | ACTIVE
-104     | Deluxe | 6000.00 | 18.00      | 8.00          | AVAILABLE |        | ACTIVE
+104     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 37     | ACTIVE
 105     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 5      | ACTIVE
 106     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 6      | ACTIVE
 107     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 7      | ACTIVE
@@ -48,26 +48,35 @@ Room ID | Type   | Rent    | Water Rate | Electric Rate | Status    | Tenant | R
 135     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 35     | ACTIVE
 136     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 36     | ACTIVE
 137     | Single | 3000.00 | 18.00      | 8.00          | AVAILABLE |        | ACTIVE
-138     | Double | 4000.00 | 18.00      | 8.00          | AVAILABLE |        | DELETED
-152     | duplex | 599.00  | 500.06     | 488.00        | AVAILABLE |        | DELETED
+140     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+141     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+142     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+143     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+144     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+145     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+146     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+147     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+148     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+149     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
+150     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        | ACTIVE
 
 ====================================================================================================
 ROOM SUMMARY
 
-- Total Records     : 39
-- Active Records    : 37
-- Deleted Records   : 2
-- Active Rooms      : 37
-- Occupied Rooms    : 34
-- Available Rooms   : 3
+- Total Records     : 48
+- Active Records    : 48
+- Deleted Records   : 0
+- Active Rooms      : 48
+- Occupied Rooms    : 35
+- Available Rooms   : 13
 
 ====================================================================================================
 TENANT SUMMARY
 
 - Total Records     : 36
-- Active Records    : 34
-- Deleted Records   : 2
-- Active Tenants    : 34
+- Active Records    : 35
+- Deleted Records   : 1
+- Active Tenants    : 35
 
 ====================================================================================================
 PAYMENT SUMMARY
@@ -87,7 +96,17 @@ Total Records counts physical slots, including deleted records.
 
 RECENT OPERATIONS (current session, latest 20)
 ------------------------------------------------------------
-No operations in this session.
+09:31:49  ADD ROOM 140
+09:31:49  ADD ROOM 141
+09:31:49  ADD ROOM 142
+09:31:49  ADD ROOM 143
+09:31:49  ADD ROOM 144
+09:31:49  ADD ROOM 145
+09:31:49  ADD ROOM 146
+09:31:49  ADD ROOM 147
+09:31:49  ADD ROOM 148
+09:31:49  ADD ROOM 149
+09:31:49  ADD ROOM 150
 
 ====================================================================================================
 END OF REPORT
