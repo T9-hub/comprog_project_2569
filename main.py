@@ -494,7 +494,14 @@ def summary_lines(data):
 def write_report():
     bar = "=" * 100
     lines = ["ROOM RECORDS", ""]
-    lines += table_lines(active_records("ROOM"), "ROOM")
+    tenants_by_id = {t["tenant_id"]: t for t in active_records("TENANT")}
+    bills = active_records("PAYMENT")
+    rows = [dict(room, tenant_name=tenants_by_id.get(room["tenant_id"], {}).get("name", "-"),
+                 outstanding=round(sum(p["total"] for p in bills if p["room_id"] == room["room_id"]
+                                       and p["status"] == "UNPAID"), 2))
+            for room in active_records("ROOM")]
+    lines += print_table(rows, ["Room", "Type", "Rent", "Status", "Tenant ID", "Name", "Unpaid Amt"],
+                         ["room_id", "room_type", "monthly_rent", "status", "tenant_id", "tenant_name", "outstanding"])
     rooms, tenants, payments = summary("ROOM"), summary("TENANT"), summary("PAYMENT")
     lines += ["", f"Summary: {rooms['Active Rooms']} rooms | {rooms['Available Rooms']} available | "
               f"{tenants['Active Tenants']} current tenants | {payments['Unpaid Bills']} unpaid bills",
@@ -531,10 +538,10 @@ def report_document(body):
     title = body[0] if body and body[0] != "ROOM RECORDS" else "DORMITORY SUMMARY REPORT"
     descriptions = {
         "DORMITORY SUMMARY REPORT": "Current rooms and summary counts from rooms.dat, tenants.dat and payments.dat.",
-        "ROOM TYPE REPORT": "Current rooms grouped by type; tenant names from tenants.dat.",
-        "TENANT STAY & PAYMENT REPORT": "Retained tenant history and all non-deleted bills, including missing tenant records.",
+        "ROOM TYPE REPORT": "Current rooms, occupants and unpaid bills grouped by room type. Debt includes past occupants.",
+        "TENANT STAY & PAYMENT REPORT": "Tenant history, current room types and non-deleted bills, including missing tenant records.",
     }
-    description = descriptions.get(title, "Bills for the selected month from payments.dat; names from tenants.dat.")
+    description = descriptions.get(title, "Selected-month bills, tenant names and current room types. Bill charges retain their original values.")
     sources = {"DORMITORY SUMMARY REPORT": "rooms.dat + tenants.dat + payments.dat",
                "ROOM TYPE REPORT": "rooms.dat + tenants.dat",
                "TENANT STAY & PAYMENT REPORT": "tenants.dat + payments.dat"}
@@ -543,27 +550,33 @@ def report_document(body):
               f"Generated At : {now:%Y-%m-%d %H:%M:%S} (+07:00)",
               f"App Version  : {APP_VERSION}", "Endianness   : Little-Endian",
               "Encoding     : UTF-8 (with fixed-size byte fields)",
-              f"Data Sources : {sources.get(title, 'payments.dat + tenants.dat')}",
+              "Data Sources : rooms.dat + tenants.dat + payments.dat",
               f"Purpose      : {description}", "", "DETAIL / TABLE", bar, ""]
     return header + body + ["", bar, "END OF REPORT".center(len(bar)), bar]
 
 
-# ============================================================ 6.5) รายงานตามที่อาจารย์ขอ
+# ========================================================
 def print_table(rows, headers, keys):
     """สร้างตารางข้อความจาก list of dict ตาม headers/keys ที่กำหนดเอง"""
     table = [[show_value(row[k]) for k in keys] for row in rows]
+def print_table(rows, headers, keys):
+    table = [[show_value(row[key]) for key in keys] for row in rows]
     return format_table(headers, table)
+
+
+# REPORT
 
 
 # ---------- Report 1: ค่าเช่า/น้ำ/ไฟ ของผู้เช่าทุกคน รายเดือน ----------
 def report_monthly_billing(month):
     tenants = {r["tenant_id"]: r["name"] for slot, r in read_all("TENANT")}
+    rooms = {r["room_id"]: r for r in active_records("ROOM")}
     rows = []
     for p in active_records("PAYMENT"):
         if p["billing_month"] != month:
             continue
         rows.append({"tenant_id": p["tenant_id"], "name": tenants.get(p["tenant_id"], "(unknown)"),
-                     "room_id": p["room_id"], "room_rent": p["room_rent"],
+                     "room_id": p["room_id"], "room_type": rooms.get(p["room_id"], {}).get("room_type", "(missing)"), "room_rent": p["room_rent"],
                      "water_cost": p["water_cost"], "electric_cost": p["electric_cost"],
                      "fine": p["fine"], "damage_fee": p["damage_fee"], "total": p["total"]})
     return rows, sum(r["total"] for r in rows)
@@ -572,8 +585,8 @@ def report_monthly_billing(month):
 def monthly_billing_report_action():
     month = ask_month("Billing month (YYYY-MM): ")
     rows, grand_total = report_monthly_billing(month)
-    headers = ["Tenant ID", "Name", "Room", "Rent", "Water", "Electric", "Fine", "Damage", "Total"]
-    keys = ["tenant_id", "name", "room_id", "room_rent", "water_cost", "electric_cost", "fine", "damage_fee", "total"]
+    headers = ["Tenant ID", "Name", "Room", "Type", "Rent", "Water", "Electric", "Fine", "Damage", "Total"]
+    keys = ["tenant_id", "name", "room_id", "room_type", "room_rent", "water_cost", "electric_cost", "fine", "damage_fee", "total"]
     lines = [f"MONTHLY TENANT BILLING REPORT - {month}", ""]
     lines += print_table(rows, headers, keys)
     lines += ["", f"Grand Total ({month}): {grand_total:.2f}  |  Records: {len(rows)}"]
@@ -585,11 +598,14 @@ def monthly_billing_report_action():
 # ---------- Report 2: แต่ละประเภทห้อง มีใครอยู่บ้าง ----------
 def report_by_room_type():
     tenant_by_room = {t["room_id"]: t["name"] for t in active_records("TENANT")}
+    bills = active_records("PAYMENT")
     by_type = {}
     for room in active_records("ROOM"):
         by_type.setdefault(room["room_type"], []).append({
             "room_id": room["room_id"], "status": room["status"],
-            "tenant_name": tenant_by_room.get(room["room_id"], "-")})
+            "tenant_name": tenant_by_room.get(room["room_id"], "-"),
+            "outstanding": round(sum(p["total"] for p in bills if p["room_id"] == room["room_id"]
+                                      and p["status"] == "UNPAID"), 2)})
     return by_type
 
 
@@ -599,8 +615,8 @@ def room_type_report_action():
             for room_type, rooms in sorted(by_type.items()) for room in rooms]
     occupied = sum(room["status"] == "OCCUPIED" for room in rows)
     lines = ["ROOM TYPE REPORT", ""]
-    lines += print_table(rows, ["Type", "Room ID", "Status", "Tenant"],
-                         ["room_type", "room_id", "status", "tenant_name"])
+    lines += print_table(rows, ["Type", "Room ID", "Status", "Tenant", "Unpaid Amt"],
+                         ["room_type", "room_id", "status", "tenant_name", "outstanding"])
     lines += ["", f"Summary: {len(by_type)} types | {len(rows)} rooms | "
               f"{occupied} occupied | {len(rows) - occupied} available"]
     print("\n" + "\n".join(lines))
@@ -651,6 +667,7 @@ def report_all_tenants_history():
     พร้อมจำนวนเดือนที่อยู่ และยอดจ่าย/ค้างจ่าย -> เอาไว้ทำตาราง + สรุปท้าย"""
     rows = []
     all_bills = active_records("PAYMENT")
+    rooms = {r["room_id"]: r for r in active_records("ROOM")}
     for slot, tenant in read_all("TENANT"):
         tenant_id = tenant["tenant_id"]
         start = datetime.datetime.strptime(tenant["contract_start"], "%Y-%m-%d").date()
@@ -677,14 +694,16 @@ def report_all_tenants_history():
                      "status": "MISSING", "months": "-", "paid_count": len(paid),
                      "paid_total": round(sum(paid), 2), "unpaid_count": len(unpaid),
                      "unpaid_total": round(sum(unpaid), 2)})
+    for row in rows:
+        row["room_type"] = rooms.get(row["room_id"], {}).get("room_type", "(missing)")
     return rows
 
 
 def tenant_history_report_action():
     rows = report_all_tenants_history()
-    headers = ["Tenant ID", "Name", "Room", "Status", "Months",
+    headers = ["Tenant ID", "Name", "Room", "Type", "Status", "Months",
                "Paid#", "Paid Amt", "Unpaid#", "Unpaid Amt"]
-    keys = ["tenant_id", "name", "room_id", "status", "months",
+    keys = ["tenant_id", "name", "room_id", "room_type", "status", "months",
             "paid_count", "paid_total", "unpaid_count", "unpaid_total"]
     lines = ["TENANT STAY & PAYMENT REPORT", ""]
     lines += print_table(rows, headers, keys)
