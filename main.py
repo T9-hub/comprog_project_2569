@@ -275,7 +275,8 @@ def active_records(kind):
 def add_record(kind, record):
     """ใช้ slot ที่ว่างเลขต่ำสุดก่อน ถ้าไม่มีค่อยต่อท้ายไฟล์"""
     record["active"] = True
-    slots = free_slots(kind)
+    # Keep tenant history even after move-out; old bills still refer to it.
+    slots = [] if kind == "TENANT" else free_slots(kind)
     save_slot(kind, slots[0] if slots else read_count(kind), record)
 
 
@@ -300,6 +301,8 @@ def find_any(kind, record_id):
 
 def check_new_id(kind, record_id):
     """ID ใหม่ต้องไม่ซ้ำ และห้ามใช้ ID ที่ใบเสร็จเก่ายังอ้างอิงอยู่"""
+    if kind == "TENANT" and find_any(kind, record_id) is not None:
+        raise ValueError(f"Tenant ID {record_id} belongs to retained history and cannot be reused.")
     try:
         get_record(kind, record_id)
     except ValueError:
@@ -400,8 +403,9 @@ def show_value(value):
 
 
 def visual_width(text):
-    return sum(0 if unicodedata.category(char).startswith("M") else
-               2 if unicodedata.east_asian_width(char) in ("W", "F") else 1
+    # TXT editors count Thai vowel/tone characters as character positions.
+    # Counting them as zero added excess padding after Thai names.
+    return sum(2 if unicodedata.east_asian_width(char) in ("W", "F") else 1
                for char in text)
 
 
@@ -409,16 +413,12 @@ def visual_ljust(text, width):
     return text + " " * max(0, width - visual_width(text))
     
     
-def table_lines(records, kind, show_status=False):
+def table_lines(records, kind):
     """สร้างตารางข้อความ (list ของบรรทัด) จาก list ของ record"""
     header = [title for title, field in COLUMNS[kind]]
-    if show_status:
-        header.append("Record Status")
     rows = []
     for record in records:
         row = [show_value(record[field]) for title, field in COLUMNS[kind]]
-        if show_status:
-            row.append("ACTIVE" if record["active"] else "DELETED")
         rows.append(row)
     return format_table(header, rows)
 
@@ -439,11 +439,15 @@ def format_table(header, rows):
                 for row in rows]
         header = [header[i] for i in fixed_columns] + [text_title]
     widths = [max(visual_width(cell) for cell in column) for column in zip(header, *rows)]
-    lines = [" | ".join(visual_ljust(c, w) for c, w in zip(header, widths)).rstrip(),
-             "-+-".join("-" * w for w in widths)]
+    border = "-+-".join("-" * w for w in widths)
+    lines = [border,
+             " | ".join(visual_ljust(c, w) for c, w in zip(header, widths)).rstrip(),
+             border]
     for row in rows:
         lines.append(" | ".join(visual_ljust(c, w) for c, w in zip(row, widths)).rstrip())
+    lines.append(border)
     return lines
+
 
 
 def show_records(records, kind):
@@ -492,7 +496,7 @@ def summary_lines(data):
 def write_report():
     bar = "=" * 100
     lines = ["ROOM RECORDS", ""]
-    lines += table_lines([r for slot, r in read_all("ROOM")], "ROOM", show_status=True)
+    lines += table_lines(active_records("ROOM"), "ROOM")
     for title, kind in (("ROOM SUMMARY", "ROOM"), ("TENANT SUMMARY", "TENANT"),
                         ("PAYMENT SUMMARY", "PAYMENT")):
         lines += ["", bar, title, ""] + summary_lines(summary(kind))
@@ -525,15 +529,24 @@ def write_lines_to_file(path, lines):
 def report_document(body):
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=7)))
     bar = "=" * max(100, max((visual_width(line) for line in body), default=0))
-    header = ["STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report", "",
+    title = body[0] if body and body[0] != "ROOM RECORDS" else "DORMITORY SUMMARY REPORT"
+    descriptions = {
+        "DORMITORY SUMMARY REPORT": "Current rooms and summary counts from rooms.dat, tenants.dat and payments.dat.",
+        "ROOM TYPE REPORT": "Current rooms grouped by type; tenant names from tenants.dat.",
+        "TENANT STAY & PAYMENT REPORT": "Retained tenant history and all non-deleted bills, including missing tenant records.",
+    }
+    description = descriptions.get(title, "Bills for the selected month from payments.dat; names from tenants.dat.")
+    sources = {"DORMITORY SUMMARY REPORT": "rooms.dat + tenants.dat + payments.dat",
+               "ROOM TYPE REPORT": "rooms.dat + tenants.dat",
+               "TENANT STAY & PAYMENT REPORT": "tenants.dat + payments.dat"}
+    heading = f"STUDENT DORMITORY MANAGEMENT SYSTEM - {title}"
+    header = [bar, heading.center(len(bar)), bar,
               f"Generated At : {now:%Y-%m-%d %H:%M:%S} (+07:00)",
               f"App Version  : {APP_VERSION}", "Endianness   : Little-Endian",
-              "Encoding     : UTF-8 (with fixed-size byte fields)", "", bar, ""]
-    footer = ["", bar, "Amounts and status counts include active records only.",
-              "Total Records counts physical slots, including deleted records.", "",
-              "RECENT OPERATIONS (current session, latest 20)", "-" * 60]
-    return header + body + footer + (history or ["No operations in this session."]) + ["", bar, "END OF REPORT"]
-
+              "Encoding     : UTF-8 (with fixed-size byte fields)",
+              f"Data Sources : {sources.get(title, 'payments.dat + tenants.dat')}",
+              f"Purpose      : {description}", "", "DETAIL / TABLE", bar, ""]
+    return header + body + ["", bar, "END OF REPORT".center(len(bar)), bar]
 
 
 # ============================================================ 6.5) รายงานตามที่อาจารย์ขอ
@@ -555,15 +568,15 @@ def report_monthly_billing(month):
         rows.append({"tenant_id": p["tenant_id"], "name": tenants.get(p["tenant_id"], "(unknown)"),
                      "room_id": p["room_id"], "room_rent": p["room_rent"],
                      "water_cost": p["water_cost"], "electric_cost": p["electric_cost"],
-                     "total": p["total"]})
+                     "fine": p["fine"], "damage_fee": p["damage_fee"], "total": p["total"]})
     return rows, sum(r["total"] for r in rows)
 
 
 def monthly_billing_report_action():
     month = ask_month("Billing month (YYYY-MM): ")
     rows, grand_total = report_monthly_billing(month)
-    headers = ["Tenant ID", "Name", "Room", "Rent", "Water", "Electric", "Total"]
-    keys = ["tenant_id", "name", "room_id", "room_rent", "water_cost", "electric_cost", "total"]
+    headers = ["Tenant ID", "Name", "Room", "Rent", "Water", "Electric", "Fine", "Damage", "Total"]
+    keys = ["tenant_id", "name", "room_id", "room_rent", "water_cost", "electric_cost", "fine", "damage_fee", "total"]
     lines = [f"MONTHLY TENANT BILLING REPORT - {month}", ""]
     lines += print_table(rows, headers, keys)
     lines += ["", f"Grand Total ({month}): {grand_total:.2f}  |  Records: {len(rows)}"]
@@ -599,8 +612,10 @@ def room_type_report_action():
             lines.append("")
             total_rooms += len(rooms)
             total_occupied += len([r for r in rooms if r["status"] == "OCCUPIED"])
-        lines.append(f"Summary: {len(by_type)} room types | {total_rooms} rooms total | "
-                     f"{total_occupied} occupied | {total_rooms - total_occupied} available")
+    total_rooms = sum(len(rooms) for rooms in by_type.values())
+    total_occupied = sum(r["status"] == "OCCUPIED" for rooms in by_type.values() for r in rooms)
+    lines += ["", f"Summary: {len(by_type)} room types | {total_rooms} rooms total | "
+              f"{total_occupied} occupied | {total_rooms - total_occupied} available"]
     print("\n" + "\n".join(lines))
     write_lines_to_file(ROOMTYPE_REPORT_PATH, lines)
     print(f"Saved to {ROOMTYPE_REPORT_PATH}")
@@ -648,6 +663,7 @@ def report_all_tenants_history():
     """รายงาน 3 (ฉบับตาราง): ทุกผู้เช่าที่เคยอยู่ (รวมคนที่ย้ายออกแล้ว)
     พร้อมจำนวนเดือนที่อยู่ และยอดจ่าย/ค้างจ่าย -> เอาไว้ทำตาราง + สรุปท้าย"""
     rows = []
+    all_bills = active_records("PAYMENT")
     for slot, tenant in read_all("TENANT"):
         tenant_id = tenant["tenant_id"]
         start = datetime.datetime.strptime(tenant["contract_start"], "%Y-%m-%d").date()
@@ -657,13 +673,23 @@ def report_all_tenants_history():
         if end.day < start.day:
             months -= 1
         months = max(months, 0)
-        bills = [p for p in active_records("PAYMENT") if p["tenant_id"] == tenant_id]
+        bills = [p for p in all_bills if p["tenant_id"] == tenant_id]
         paid = [p["total"] for p in bills if p["status"] == "PAID"]
         unpaid = [p["total"] for p in bills if p["status"] == "UNPAID"]
         rows.append({"tenant_id": tenant_id, "name": tenant["name"], "room_id": tenant["room_id"],
                      "status": tenant["status"], "months": months,
                      "paid_count": len(paid), "paid_total": round(sum(paid), 2),
                      "unpaid_count": len(unpaid), "unpaid_total": round(sum(unpaid), 2)})
+    known_ids = {row["tenant_id"] for row in rows}
+    for tenant_id in sorted({p["tenant_id"] for p in all_bills} - known_ids):
+        bills = [p for p in all_bills if p["tenant_id"] == tenant_id]
+        paid = [p["total"] for p in bills if p["status"] == "PAID"]
+        unpaid = [p["total"] for p in bills if p["status"] == "UNPAID"]
+        rows.append({"tenant_id": tenant_id, "name": "(missing tenant record)",
+                     "room_id": ",".join(sorted({p["room_id"] for p in bills})),
+                     "status": "MISSING", "months": "-", "paid_count": len(paid),
+                     "paid_total": round(sum(paid), 2), "unpaid_count": len(unpaid),
+                     "unpaid_total": round(sum(unpaid), 2)})
     return rows
 
 
@@ -678,7 +704,7 @@ def tenant_history_report_action():
     total_paid = sum(r["paid_total"] for r in rows)
     total_unpaid = sum(r["unpaid_total"] for r in rows)
     lines += ["", f"Summary: {len(rows)} tenants | Total Paid: {total_paid:.2f} | "
-                  f"Total Unpaid: {total_unpaid:.2f}"]
+              f"Total Unpaid: {total_unpaid:.2f}"]
     print("\n" + "\n".join(lines))
     write_lines_to_file(TENANT_REPORT_PATH, lines)
     print(f"\nSaved to {TENANT_REPORT_PATH}")

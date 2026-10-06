@@ -1,15 +1,20 @@
-STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
-
-Generated At : 2026-10-06 10:20:30 (+07:00)
+====================================================================================================
+                       STUDENT DORMITORY MANAGEMENT SYSTEM - ROOM TYPE REPORT                       
+====================================================================================================
+Generated At : 2026-10-06 11:26:23 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
+Data Sources : rooms.dat + tenants.dat
+Purpose      : Current rooms grouped by type; tenant names from tenants.dat.
 
+DETAIL / TABLE
 ====================================================================================================
 
 ROOM TYPE REPORT
 
 Room Type: Single  (18 rooms)
+--------+-----------+-------
 Room ID | Status    | Tenant
 --------+-----------+-------
 101     | OCCUPIED  | สมชาย
@@ -30,8 +35,10 @@ Room ID | Status    | Tenant
 148     | AVAILABLE | -
 149     | AVAILABLE | -
 150     | AVAILABLE | -
+--------+-----------+-------
 
 Room Type: Double  (6 rooms)
+--------+-----------+-------
 Room ID | Status    | Tenant
 --------+-----------+-------
 102     | AVAILABLE | -
@@ -40,56 +47,59 @@ Room ID | Status    | Tenant
 120     | OCCUPIED  | ประภาส
 126     | OCCUPIED  | จิราพร
 132     | OCCUPIED  | นงนุช
+--------+-----------+-------
 
 Room Type: Twin  (6 rooms)
+--------+----------+----------
 Room ID | Status   | Tenant
---------+----------+-------
+--------+----------+----------
 103     | OCCUPIED | วิชัย
 109     | OCCUPIED | ชัยวัฒน์
 115     | OCCUPIED | ธีรพงษ์
 121     | OCCUPIED | มาลี
 127     | OCCUPIED | วีระ
 133     | OCCUPIED | ศักดิ์ชัย
+--------+----------+----------
 
 Room Type: Deluxe  (6 rooms)
+--------+----------+-----------
 Room ID | Status   | Tenant
---------+----------+---------
+--------+----------+-----------
 104     | OCCUPIED | Thanlrit
 110     | OCCUPIED | พรทิพย์
 116     | OCCUPIED | จันทร์เพ็ญ
 122     | OCCUPIED | เอกชัย
 128     | OCCUPIED | สุดา
 134     | OCCUPIED | ลัดดา
+--------+----------+-----------
 
 Room Type: Suite  (6 rooms)
+--------+----------+----------
 Room ID | Status   | Tenant
---------+----------+-------
+--------+----------+----------
 105     | OCCUPIED | ประยุทธ์
 111     | OCCUPIED | สุรชัย
 117     | OCCUPIED | วรรณา
 123     | OCCUPIED | ดวงใจ
 129     | OCCUPIED | ธวัชชัย
 135     | OCCUPIED | ภาณุวัฒน์
+--------+----------+----------
 
 Room Type: Studio  (6 rooms)
+--------+----------+---------
 Room ID | Status   | Tenant
---------+----------+-------
+--------+----------+---------
 106     | OCCUPIED | มณีรัตน์
 112     | OCCUPIED | นิภา
 118     | OCCUPIED | ไพโรจน์
 124     | OCCUPIED | สมบูรณ์
 130     | OCCUPIED | อำไพ
 136     | OCCUPIED | เพ็ญศรี
+--------+----------+---------
+
 
 Summary: 6 room types | 48 rooms total | 35 occupied | 13 available
 
 ====================================================================================================
-Amounts and status counts include active records only.
-Total Records counts physical slots, including deleted records.
-
-RECENT OPERATIONS (current session, latest 20)
-------------------------------------------------------------
-No operations in this session.
-
+                                           END OF REPORT                                            
 ====================================================================================================
-END OF REPORT

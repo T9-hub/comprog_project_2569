@@ -1,16 +1,21 @@
-STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
-
-Generated At : 2026-10-06 10:20:33 (+07:00)
+=========================================================================================================
+                    STUDENT DORMITORY MANAGEMENT SYSTEM - TENANT STAY & PAYMENT REPORT                   
+=========================================================================================================
+Generated At : 2026-10-06 11:26:23 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
+Data Sources : tenants.dat + payments.dat
+Purpose      : Retained tenant history and all non-deleted bills, including missing tenant records.
 
-====================================================================================================
+DETAIL / TABLE
+=========================================================================================================
 
 TENANT STAY & PAYMENT REPORT
 
+----------+------+-----------+--------+-------+----------+---------+------------+------------------------
 Tenant ID | Room | Status    | Months | Paid# | Paid Amt | Unpaid# | Unpaid Amt | Name
-----------+------+-----------+--------+-------+----------+---------+------------+---------
+----------+------+-----------+--------+-------+----------+---------+------------+------------------------
 1         | 101  | ACTIVE    | 7      | 2     | 7180.00  | 1       | 3590.00    | สมชาย
 37        | 104  | ACTIVE    | 0      | 0     | 0        | 0       | 0          | Thanlrit
 3         | 103  | ACTIVE    | 5      | 2     | 10180.00 | 1       | 5090.00    | วิชัย
@@ -47,16 +52,11 @@ Tenant ID | Room | Status    | Months | Paid# | Paid Amt | Unpaid# | Unpaid Amt 
 34        | 134  | ACTIVE    | 6      | 2     | 13180.00 | 1       | 6590.00    | ลัดดา
 35        | 135  | ACTIVE    | 5      | 2     | 16180.00 | 1       | 8090.00    | ภาณุวัฒน์
 36        | 136  | ACTIVE    | 4      | 3     | 16770.00 | 0       | 0          | เพ็ญศรี
+2         | 102  | MISSING   | -      | 2     | 9180.00  | 1       | 4590.00    | (missing tenant record)
+----------+------+-----------+--------+-------+----------+---------+------------+------------------------
 
-Summary: 36 tenants | Total Paid: 398890.00 | Total Unpaid: 191060.00
+Summary: 37 tenants | Total Paid: 408070.00 | Total Unpaid: 195650.00
 
-====================================================================================================
-Amounts and status counts include active records only.
-Total Records counts physical slots, including deleted records.
-
-RECENT OPERATIONS (current session, latest 20)
-------------------------------------------------------------
-No operations in this session.
-
-====================================================================================================
-END OF REPORT
+=========================================================================================================
+                                              END OF REPORT                                              
+=========================================================================================================
