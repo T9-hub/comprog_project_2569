@@ -1,7 +1,7 @@
 ====================================================================================================
                    STUDENT DORMITORY MANAGEMENT SYSTEM - DORMITORY SUMMARY REPORT                   
 ====================================================================================================
-Generated At : 2026-10-06 11:26:23 (+07:00)
+Generated At : 2026-10-06 11:38:32 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -13,88 +13,61 @@ DETAIL / TABLE
 
 ROOM RECORDS
 
---------+--------+---------+------------+---------------+-----------+-------
-Room ID | Type   | Rent    | Water Rate | Electric Rate | Status    | Tenant
---------+--------+---------+------------+---------------+-----------+-------
-101     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 1
-102     | Double | 4000.00 | 18.00      | 8.00          | AVAILABLE |
-103     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 3
-104     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 37
-105     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 5
-106     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 6
-107     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 7
-108     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 8
-109     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 9
-110     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 10
-111     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 11
-112     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 12
-113     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 13
-114     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 14
-115     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 15
-116     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 16
-117     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 17
-118     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 18
-119     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 19
-120     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 20
-121     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 21
-122     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 22
-123     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 23
-124     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 24
-125     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 25
-126     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 26
-127     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 27
-128     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 28
-129     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 29
-130     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 30
-131     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 31
-132     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 32
-133     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 33
-134     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 34
-135     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 35
-136     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 36
-137     | Single | 3000.00 | 18.00      | 8.00          | AVAILABLE |
-140     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-141     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-142     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-143     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-144     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-145     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-146     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-147     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-148     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-149     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
-150     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |
---------+--------+---------+------------+---------------+-----------+-------
++---------+--------+---------+------------+---------------+-----------+--------+
+| Room ID | Type   | Rent    | Water Rate | Electric Rate | Status    | Tenant |
++---------+--------+---------+------------+---------------+-----------+--------+
+| 101     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 1      |
+| 102     | Double | 4000.00 | 18.00      | 8.00          | AVAILABLE |        |
+| 103     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 3      |
+| 104     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 37     |
+| 105     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 5      |
+| 106     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 6      |
+| 107     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 7      |
+| 108     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 8      |
+| 109     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 9      |
+| 110     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 10     |
+| 111     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 11     |
+| 112     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 12     |
+| 113     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 13     |
+| 114     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 14     |
+| 115     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 15     |
+| 116     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 16     |
+| 117     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 17     |
+| 118     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 18     |
+| 119     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 19     |
+| 120     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 20     |
+| 121     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 21     |
+| 122     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 22     |
+| 123     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 23     |
+| 124     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 24     |
+| 125     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 25     |
+| 126     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 26     |
+| 127     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 27     |
+| 128     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 28     |
+| 129     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 29     |
+| 130     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 30     |
+| 131     | Single | 3000.00 | 18.00      | 8.00          | OCCUPIED  | 31     |
+| 132     | Double | 4000.00 | 18.00      | 8.00          | OCCUPIED  | 32     |
+| 133     | Twin   | 4500.00 | 18.00      | 8.00          | OCCUPIED  | 33     |
+| 134     | Deluxe | 6000.00 | 18.00      | 8.00          | OCCUPIED  | 34     |
+| 135     | Suite  | 7500.00 | 18.00      | 8.00          | OCCUPIED  | 35     |
+| 136     | Studio | 5000.00 | 18.00      | 8.00          | OCCUPIED  | 36     |
+| 137     | Single | 3000.00 | 18.00      | 8.00          | AVAILABLE |        |
+| 140     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 141     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 142     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 143     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 144     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 145     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 146     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 147     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 148     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 149     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
+| 150     | Single | 500.00  | 600.00     | 700.00        | AVAILABLE |        |
++---------+--------+---------+------------+---------------+-----------+--------+
 
-====================================================================================================
-ROOM SUMMARY
-
-- Total Records     : 48
-- Active Records    : 48
-- Deleted Records   : 0
-- Active Rooms      : 48
-- Occupied Rooms    : 35
-- Available Rooms   : 13
-
-====================================================================================================
-TENANT SUMMARY
-
-- Total Records     : 36
-- Active Records    : 35
-- Deleted Records   : 1
-- Active Tenants    : 35
-
-====================================================================================================
-PAYMENT SUMMARY
-
-- Total Records     : 108
-- Active Records    : 108
-- Deleted Records   : 0
-- Paid Bills        : 73
-- Unpaid Bills      : 35
-- Total Amount      : 603720.00
-- Paid Amount       : 408070.00
-- Unpaid Amount     : 195650.00
+Summary: 48 rooms | 13 available | 35 current tenants | 35 unpaid bills
+Paid amount: 408070.00 | Outstanding: 195650.00
 
 ====================================================================================================
                                            END OF REPORT                                            

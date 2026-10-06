@@ -117,6 +117,17 @@ def ask_room_type(optional=False):
         print(f"ERROR: Please choose a room type number (1-{len(ROOM_TYPES)}).")
 
 
+def ask_english_name(prompt, optional=False):
+    while True:
+        name = ask_text(prompt, 40, optional=optional)
+        if name is None:
+            return None
+        if name.isascii() and any(char.isalpha() for char in name) and all(
+                char.isalpha() or char in " -'." for char in name):
+            return name
+        print("ERROR: Use English letters, spaces, hyphens, apostrophes or periods only.")
+
+
 def ask_amount(prompt, optional=False):
     """ตัวเลขทศนิยมที่ >= 0"""
     while True:
@@ -423,31 +434,18 @@ def table_lines(records, kind):
     return format_table(header, rows)
 
 
-def format_table(header, rows):
-    """Place shaped Unicode text last so it cannot shift later columns."""
-    text_columns = [i for i, title in enumerate(header)
-                    if title in ("Name", "Tenant", "Type") and
-                    (title == "Name" or any(not row[i].isascii() for row in rows))]
-    text_columns += [i for i in range(len(header)) if i not in text_columns
-                     and any(not row[i].isascii() for row in rows)]
-    if text_columns:
-        fixed_columns = [i for i in range(len(header)) if i not in text_columns]
-        text_title = header[text_columns[0]] if len(text_columns) == 1 else "Details"
-        rows = [[row[i] for i in fixed_columns] +
-                [row[text_columns[0]] if len(text_columns) == 1 else
-                 "; ".join(f"{header[i]}: {row[i]}" for i in text_columns)]
-                for row in rows]
-        header = [header[i] for i in fixed_columns] + [text_title]
-    widths = [max(visual_width(cell) for cell in column) for column in zip(header, *rows)]
-    border = "-+-".join("-" * w for w in widths)
-    lines = [border,
-             " | ".join(visual_ljust(c, w) for c, w in zip(header, widths)).rstrip(),
-             border]
-    for row in rows:
-        lines.append(" | ".join(visual_ljust(c, w) for c, w in zip(row, widths)).rstrip())
-    lines.append(border)
-    return lines
+ENGLISH_DISPLAY_NAMES = {'สมชาย': 'Somchai', 'สมหญิง': 'Somying', 'วิชัย': 'Wichai', 'อรทัย': 'Orathai', 'ประยุทธ์': 'Prayut', 'มณีรัตน์': 'Maneerat', 'ธนกร': 'Thanakorn', 'กัลยา': 'Kanlaya', 'ชัยวัฒน์': 'Chaiwat', 'พรทิพย์': 'Pornthip', 'สุรชัย': 'Surachai', 'นิภา': 'Nipha', 'อนุชา': 'Anucha', 'รัตนา': 'Rattana', 'ธีรพงษ์': 'Theeraphong', 'จันทร์เพ็ญ': 'Chanphen', 'วรรณา': 'Wanna', 'ไพโรจน์': 'Pairoj', 'สุนีย์': 'Sunee', 'ประภาส': 'Praphat', 'มาลี': 'Malee', 'เอกชัย': 'Ekachai', 'ดวงใจ': 'Duangjai', 'สมบูรณ์': 'Somboon', 'ปิยะ': 'Piya', 'จิราพร': 'Jiraporn', 'วีระ': 'Weera', 'สุดา': 'Suda', 'ธวัชชัย': 'Thawatchai', 'อำไพ': 'Amphai', 'กิตติ': 'Kitti', 'นงนุช': 'Nongnuch', 'ศักดิ์ชัย': 'Sakchai', 'ลัดดา': 'Ladda', 'ภาณุวัฒน์': 'Phanuwat', 'เพ็ญศรี': 'Phensri'}
 
+
+def format_table(header, rows):
+    """ASCII grid: identical border positions in a monospace TXT editor."""
+    rows = [[cell if cell.isascii() else ENGLISH_DISPLAY_NAMES.get(cell, "(English name needed)")
+             for cell in row] for row in rows]
+    widths = [max(len(cell) for cell in column) for column in zip(header, *rows)]
+    border = "+" + "+".join("-" * (width + 2) for width in widths) + "+"
+    def row_line(row):
+        return "| " + " | ".join(cell.ljust(width) for cell, width in zip(row, widths)) + " |"
+    return [border, row_line(header), border] + [row_line(row) for row in rows] + [border]
 
 
 def show_records(records, kind):
@@ -497,9 +495,10 @@ def write_report():
     bar = "=" * 100
     lines = ["ROOM RECORDS", ""]
     lines += table_lines(active_records("ROOM"), "ROOM")
-    for title, kind in (("ROOM SUMMARY", "ROOM"), ("TENANT SUMMARY", "TENANT"),
-                        ("PAYMENT SUMMARY", "PAYMENT")):
-        lines += ["", bar, title, ""] + summary_lines(summary(kind))
+    rooms, tenants, payments = summary("ROOM"), summary("TENANT"), summary("PAYMENT")
+    lines += ["", f"Summary: {rooms['Active Rooms']} rooms | {rooms['Available Rooms']} available | "
+              f"{tenants['Active Tenants']} current tenants | {payments['Unpaid Bills']} unpaid bills",
+              f"Paid amount: {payments['Paid Amount']:.2f} | Outstanding: {payments['Unpaid Amount']:.2f}"]
     write_lines_to_file(REPORT_PATH, lines)
 
 
@@ -552,8 +551,6 @@ def report_document(body):
 # ============================================================ 6.5) รายงานตามที่อาจารย์ขอ
 def print_table(rows, headers, keys):
     """สร้างตารางข้อความจาก list of dict ตาม headers/keys ที่กำหนดเอง"""
-    if not rows:
-        return ["No records found."]
     table = [[show_value(row[k]) for k in keys] for row in rows]
     return format_table(headers, table)
 
@@ -598,24 +595,14 @@ def report_by_room_type():
 
 def room_type_report_action():
     by_type = report_by_room_type()
+    rows = [dict(room, room_type=room_type)
+            for room_type, rooms in sorted(by_type.items()) for room in rooms]
+    occupied = sum(room["status"] == "OCCUPIED" for room in rows)
     lines = ["ROOM TYPE REPORT", ""]
-    if not by_type:
-        lines.append("No rooms found.")
-    else:
-        headers = ["Room ID", "Status", "Tenant"]
-        keys = ["room_id", "status", "tenant_name"]
-        total_rooms = 0
-        total_occupied = 0
-        for room_type, rooms in by_type.items():
-            lines.append(f"Room Type: {room_type}  ({len(rooms)} rooms)")
-            lines += print_table(rooms, headers, keys)
-            lines.append("")
-            total_rooms += len(rooms)
-            total_occupied += len([r for r in rooms if r["status"] == "OCCUPIED"])
-    total_rooms = sum(len(rooms) for rooms in by_type.values())
-    total_occupied = sum(r["status"] == "OCCUPIED" for rooms in by_type.values() for r in rooms)
-    lines += ["", f"Summary: {len(by_type)} room types | {total_rooms} rooms total | "
-              f"{total_occupied} occupied | {total_rooms - total_occupied} available"]
+    lines += print_table(rows, ["Type", "Room ID", "Status", "Tenant"],
+                         ["room_type", "room_id", "status", "tenant_name"])
+    lines += ["", f"Summary: {len(by_type)} types | {len(rows)} rooms | "
+              f"{occupied} occupied | {len(rows) - occupied} available"]
     print("\n" + "\n".join(lines))
     write_lines_to_file(ROOMTYPE_REPORT_PATH, lines)
     print(f"Saved to {ROOMTYPE_REPORT_PATH}")
@@ -840,7 +827,7 @@ def add_tenant():
     tenant_id = ask_int_text("Tenant ID: ", 10)
     check_new_id("TENANT", tenant_id)
     student_id = ask_int_text("Student ID: ", 15)
-    name = ask_text("Name (max 40 UTF-8 bytes): ", 40)
+    name = ask_english_name("Name in English (max 40 characters): ")
     phone = ask_int_text("Phone: ", 15)
     room_id = ask_int_text("Room ID: ", 10)
     if get_record("ROOM", room_id)[1]["status"] != "AVAILABLE":
@@ -856,7 +843,7 @@ def update_tenant():
     slot, tenant = get_record("TENANT", ask_int_text("Tenant ID: ", 10))
     show_one(tenant)
     print("Leave a field blank to keep its current value.")
-    name = ask_text("Name: ", 40, optional=True)
+    name = ask_english_name("Name in English: ", optional=True)
     phone = ask_int_text("Phone: ", 15, optional=True)
     end = ask_date("Contract end: ", earliest=tenant["contract_start"], optional=True)
     deposit = ask_amount("Deposit: ", optional=True)
