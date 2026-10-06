@@ -1,6 +1,6 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-10-06 09:32:18 (+07:00)
+Generated At : 2026-10-06 10:20:45 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -84,11 +84,11 @@ PAYMENT SUMMARY
 - Total Records     : 108
 - Active Records    : 108
 - Deleted Records   : 0
-- Paid Bills        : 72
-- Unpaid Bills      : 36
+- Paid Bills        : 73
+- Unpaid Bills      : 35
 - Total Amount      : 603720.00
-- Paid Amount       : 402480.00
-- Unpaid Amount     : 201240.00
+- Paid Amount       : 408070.00
+- Unpaid Amount     : 195650.00
 
 ====================================================================================================
 Amounts and status counts include active records only.
@@ -96,17 +96,7 @@ Total Records counts physical slots, including deleted records.
 
 RECENT OPERATIONS (current session, latest 20)
 ------------------------------------------------------------
-09:31:49  ADD ROOM 140
-09:31:49  ADD ROOM 141
-09:31:49  ADD ROOM 142
-09:31:49  ADD ROOM 143
-09:31:49  ADD ROOM 144
-09:31:49  ADD ROOM 145
-09:31:49  ADD ROOM 146
-09:31:49  ADD ROOM 147
-09:31:49  ADD ROOM 148
-09:31:49  ADD ROOM 149
-09:31:49  ADD ROOM 150
+No operations in this session.
 
 ====================================================================================================
 END OF REPORT

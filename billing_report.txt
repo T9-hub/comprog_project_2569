@@ -1,6 +1,6 @@
 STUDENT DORMITORY MANAGEMENT SYSTEM - Summary Report
 
-Generated At : 2026-10-05 20:29:28 (+07:00)
+Generated At : 2026-10-06 10:20:28 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -10,9 +10,9 @@ Encoding     : UTF-8 (with fixed-size byte fields)
 MONTHLY TENANT BILLING REPORT - 2026-10
 
 Tenant ID | Room | Rent    | Water  | Electric | Total   | Name
-----------+------+---------+--------+----------+---------+--------
+----------+------+---------+--------+----------+---------+----------
 1         | 101  | 3000.00 | 270.00 | 320.00   | 3590.00 | สมชาย
-2         | 102  | 4000.00 | 270.00 | 320.00   | 4590.00 | สมหญิง
+2         | 102  | 4000.00 | 270.00 | 320.00   | 4590.00 | (unknown)
 3         | 103  | 4500.00 | 270.00 | 320.00   | 5090.00 | วิชัย
 4         | 104  | 6000.00 | 270.00 | 320.00   | 6590.00 | อรทัย
 5         | 105  | 7500.00 | 270.00 | 320.00   | 8090.00 | ประยุทธ์
