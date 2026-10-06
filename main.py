@@ -9,6 +9,7 @@ import unicodedata
 # ============================================================ 1) ค่าคงที่
 APP_VERSION = "1.0"
 FILE_VERSION = 1
+ROOM_TYPES = ("Single", "Double", "Twin", "Deluxe", "Suite", "Studio")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 REPORT_PATH = os.path.join(BASE_DIR, "report.txt")
@@ -97,6 +98,23 @@ def ask_text(prompt, max_bytes, optional=False):
             print(f"ERROR: Too long (maximum {max_bytes} UTF-8 bytes).")
         else:
             return text
+
+
+def ask_room_type(optional=False):
+    """เลือกประเภทห้องด้วยหมายเลข; ตอนแก้ไขเว้นว่างเพื่อใช้ค่าเดิมได้"""
+    print("\nROOM TYPES")
+    options = {str(index): room_type
+               for index, room_type in enumerate(ROOM_TYPES, start=1)}
+    for number, room_type in options.items():
+        print(f"[{number}] {room_type}")
+    prompt = "Room type number (blank = keep current): " if optional else "Room type number: "
+    while True:
+        choice = input(prompt).strip()
+        if optional and choice == "":
+            return None
+        if choice in options:
+            return options[choice]
+        print(f"ERROR: Please choose a room type number (1-{len(ROOM_TYPES)}).")
 
 
 def ask_amount(prompt, optional=False):
@@ -706,7 +724,7 @@ def add_rooms_range():
     width = len(first_text)  # รักษาเลข 0 นำหน้า เช่น 0101
     room_ids = [str(n).zfill(width) for n in range(first, last + 1)]
 
-    room_type = ask_text("Room type (same for all): ", 20)
+    room_type = ask_room_type()
     rent = ask_amount("Monthly rent: ")
     water_rate = ask_amount("Water rate: ")
     electric_rate = ask_amount("Electric rate: ")
@@ -763,7 +781,7 @@ def add_monthly_bills_for_all():
 def add_room():
     room_id = ask_int_text("Room ID: ", 10)
     check_new_id("ROOM", room_id)
-    room_type = ask_text("Room type: ", 20)
+    room_type = ask_room_type()
     rent = ask_amount("Monthly rent: ")
     water_rate = ask_amount("Water rate: ")
     electric_rate = ask_amount("Electric rate: ")
@@ -775,7 +793,7 @@ def update_room():
     slot, room = get_record("ROOM", ask_int_text("Room ID: ", 10))
     show_one(room)
     print("Leave a field blank to keep its current value.")
-    room_type = ask_text("Room type: ", 20, optional=True)
+    room_type = ask_room_type(optional=True)
     rent = ask_amount("Monthly rent: ", optional=True)
     water_rate = ask_amount("Water rate: ", optional=True)
     electric_rate = ask_amount("Electric rate: ", optional=True)
