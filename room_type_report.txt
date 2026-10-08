@@ -1,7 +1,7 @@
 ====================================================================================================
                        STUDENT DORMITORY MANAGEMENT SYSTEM - ROOM TYPE REPORT                       
 ====================================================================================================
-Generated At : 2026-10-08 11:26:08 (+07:00)
+Generated At : 2026-10-08 13:01:42 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -18,13 +18,13 @@ ROOM TYPE REPORT
 +--------+-------------+----------+-----------+---------+------------+
 | Deluxe | 6           | 6        | 0         | 6       | 39540.00   |
 | Double | 7           | 6        | 1         | 6       | 27540.00   |
-| Single | 7           | 6        | 1         | 6       | 21540.00   |
+| Single | 13          | 6        | 7         | 6       | 21540.00   |
 | Studio | 6           | 6        | 0         | 6       | 33540.00   |
 | Suite  | 6           | 6        | 0         | 6       | 48540.00   |
 | Twin   | 6           | 6        | 0         | 6       | 30540.00   |
 +--------+-------------+----------+-----------+---------+------------+
 
-Summary: 6 types | 38 rooms | 36 occupied | 2 available
+Summary: 6 types | 44 rooms | 36 occupied | 8 available
 Tenants counts current tenants; unpaid amounts include past occupants of current rooms.
 
 ====================================================================================================

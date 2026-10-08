@@ -1,7 +1,7 @@
 ====================================================================================================
                    STUDENT DORMITORY MANAGEMENT SYSTEM - DORMITORY SUMMARY REPORT                   
 ====================================================================================================
-Generated At : 2026-10-08 11:26:33 (+07:00)
+Generated At : 2026-10-08 13:24:08 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -54,10 +54,16 @@ ROOM RECORDS
 | 136  | Studio | 5000.00 | OCCUPIED  | 36        | Phensri     | 5590.00    |
 | 137  | Single | 3000.00 | AVAILABLE |           | -           | 0          |
 | 138  | Double | 4000.00 | AVAILABLE |           | -           | 0          |
+| 140  | Single | 500.00  | AVAILABLE |           | -           | 0          |
+| 141  | Single | 500.00  | AVAILABLE |           | -           | 0          |
+| 142  | Single | 500.00  | AVAILABLE |           | -           | 0          |
+| 143  | Single | 500.00  | AVAILABLE |           | -           | 0          |
+| 144  | Single | 500.00  | AVAILABLE |           | -           | 0          |
+| 145  | Single | 500.00  | AVAILABLE |           | -           | 0          |
 +------+--------+---------+-----------+-----------+-------------+------------+
 
-Summary: 38 rooms | 2 available | 36 current tenants | 36 unpaid bills
-Paid amount: 402480.00 | Outstanding: 201240.00
+Summary: 44 rooms | 8 available | 36 current tenants | 36 unpaid bills
+Paid amount: 418980.00 | Outstanding: 201240.00
 
 ====================================================================================================
                                            END OF REPORT                                            

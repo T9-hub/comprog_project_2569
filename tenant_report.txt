@@ -1,7 +1,7 @@
 ====================================================================================================
                  STUDENT DORMITORY MANAGEMENT SYSTEM - TENANT STAY & PAYMENT REPORT                 
 ====================================================================================================
-Generated At : 2026-10-08 11:26:09 (+07:00)
+Generated At : 2026-10-08 13:05:24 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -16,7 +16,7 @@ TENANT STAY & PAYMENT REPORT
 +-----------+-------------+------+--------+--------+-------+----------+---------+------------+
 | Tenant ID | Name        | Room | Type   | Status | Paid# | Paid Amt | Unpaid# | Unpaid Amt |
 +-----------+-------------+------+--------+--------+-------+----------+---------+------------+
-| 1         | Somchai     | 101  | Single | ACTIVE | 2     | 7180.00  | 1       | 3590.00    |
+| 1         | Somchai     | 101  | Single | ACTIVE | 2     | 7180.00  | 2       | 20090.00   |
 | 2         | Somying     | 102  | Double | ACTIVE | 2     | 9180.00  | 1       | 4590.00    |
 | 3         | Wichai      | 103  | Twin   | ACTIVE | 2     | 10180.00 | 1       | 5090.00    |
 | 4         | Orathai     | 104  | Deluxe | ACTIVE | 2     | 13180.00 | 1       | 6590.00    |
@@ -54,7 +54,7 @@ TENANT STAY & PAYMENT REPORT
 | 36        | Phensri     | 136  | Studio | ACTIVE | 2     | 11180.00 | 1       | 5590.00    |
 +-----------+-------------+------+--------+--------+-------+----------+---------+------------+
 
-Summary: 36 tenants | Total Paid: 402480.00 | Total Unpaid: 201240.00
+Summary: 36 tenants | Total Paid: 402480.00 | Total Unpaid: 217740.00
 
 ====================================================================================================
                                            END OF REPORT                                            
