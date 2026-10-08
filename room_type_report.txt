@@ -1,72 +1,31 @@
 ====================================================================================================
                        STUDENT DORMITORY MANAGEMENT SYSTEM - ROOM TYPE REPORT                       
 ====================================================================================================
-Generated At : 2026-10-07 04:04:00 (+07:00)
+Generated At : 2026-10-08 11:26:08 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
 Data Sources : rooms.dat + tenants.dat + payments.dat
-Purpose      : Current rooms, occupants and unpaid bills grouped by room type. Debt includes past occupants.
+Purpose      : One row per room type: availability, current tenant counts and unpaid room bills, including past occupants.
 
 DETAIL / TABLE
 ====================================================================================================
 
 ROOM TYPE REPORT
 
-+--------+---------+-----------+-------------+------------+
-| Type   | Room ID | Status    | Tenant      | Unpaid Amt |
-+--------+---------+-----------+-------------+------------+
-| Deluxe | 104     | OCCUPIED  | Thanlrit    | 6590.00    |
-| Deluxe | 110     | OCCUPIED  | Pornthip    | 6590.00    |
-| Deluxe | 116     | OCCUPIED  | Chanphen    | 6590.00    |
-| Deluxe | 122     | OCCUPIED  | Ekachai     | 6590.00    |
-| Deluxe | 128     | OCCUPIED  | Suda        | 6590.00    |
-| Deluxe | 134     | OCCUPIED  | Ladda       | 6590.00    |
-| Double | 102     | AVAILABLE | -           | 4590.00    |
-| Double | 108     | OCCUPIED  | Kanlaya     | 4590.00    |
-| Double | 114     | OCCUPIED  | Rattana     | 4590.00    |
-| Double | 120     | OCCUPIED  | Praphat     | 4590.00    |
-| Double | 126     | OCCUPIED  | Jiraporn    | 4590.00    |
-| Double | 132     | OCCUPIED  | Nongnuch    | 4590.00    |
-| Single | 101     | OCCUPIED  | Somchai     | 3590.00    |
-| Single | 107     | OCCUPIED  | Thanakorn   | 3590.00    |
-| Single | 113     | OCCUPIED  | Anucha      | 3590.00    |
-| Single | 119     | OCCUPIED  | Sunee       | 3590.00    |
-| Single | 125     | OCCUPIED  | Piya        | 3590.00    |
-| Single | 131     | OCCUPIED  | Kitti       | 3590.00    |
-| Single | 137     | AVAILABLE | -           | 0          |
-| Single | 140     | AVAILABLE | -           | 0          |
-| Single | 141     | AVAILABLE | -           | 0          |
-| Single | 142     | AVAILABLE | -           | 0          |
-| Single | 143     | AVAILABLE | -           | 0          |
-| Single | 144     | AVAILABLE | -           | 0          |
-| Single | 145     | AVAILABLE | -           | 0          |
-| Single | 146     | AVAILABLE | -           | 0          |
-| Single | 147     | AVAILABLE | -           | 0          |
-| Single | 148     | AVAILABLE | -           | 0          |
-| Single | 149     | AVAILABLE | -           | 0          |
-| Single | 150     | AVAILABLE | -           | 0          |
-| Studio | 106     | OCCUPIED  | Maneerat    | 5590.00    |
-| Studio | 112     | OCCUPIED  | Nipha       | 5590.00    |
-| Studio | 118     | OCCUPIED  | Pairoj      | 5590.00    |
-| Studio | 124     | OCCUPIED  | Somboon     | 5590.00    |
-| Studio | 130     | OCCUPIED  | Amphai      | 5590.00    |
-| Studio | 136     | OCCUPIED  | Phensri     | 0          |
-| Suite  | 105     | OCCUPIED  | Prayut      | 8090.00    |
-| Suite  | 111     | OCCUPIED  | Surachai    | 8090.00    |
-| Suite  | 117     | OCCUPIED  | Wanna       | 8090.00    |
-| Suite  | 123     | OCCUPIED  | Duangjai    | 8090.00    |
-| Suite  | 129     | OCCUPIED  | Thawatchai  | 8090.00    |
-| Suite  | 135     | OCCUPIED  | Phanuwat    | 8090.00    |
-| Twin   | 103     | OCCUPIED  | Wichai      | 5090.00    |
-| Twin   | 109     | OCCUPIED  | Chaiwat     | 5090.00    |
-| Twin   | 115     | OCCUPIED  | Theeraphong | 5090.00    |
-| Twin   | 121     | OCCUPIED  | Malee       | 5090.00    |
-| Twin   | 127     | OCCUPIED  | Weera       | 5090.00    |
-| Twin   | 133     | OCCUPIED  | Sakchai     | 5090.00    |
-+--------+---------+-----------+-------------+------------+
++--------+-------------+----------+-----------+---------+------------+
+| Type   | Total Rooms | Occupied | Available | Tenants | Unpaid Amt |
++--------+-------------+----------+-----------+---------+------------+
+| Deluxe | 6           | 6        | 0         | 6       | 39540.00   |
+| Double | 7           | 6        | 1         | 6       | 27540.00   |
+| Single | 7           | 6        | 1         | 6       | 21540.00   |
+| Studio | 6           | 6        | 0         | 6       | 33540.00   |
+| Suite  | 6           | 6        | 0         | 6       | 48540.00   |
+| Twin   | 6           | 6        | 0         | 6       | 30540.00   |
++--------+-------------+----------+-----------+---------+------------+
 
-Summary: 6 types | 48 rooms | 35 occupied | 13 available
+Summary: 6 types | 38 rooms | 36 occupied | 2 available
+Tenants counts current tenants; unpaid amounts include past occupants of current rooms.
 
 ====================================================================================================
                                            END OF REPORT                                            

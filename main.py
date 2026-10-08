@@ -538,7 +538,7 @@ def report_document(body):
     title = body[0] if body and body[0] != "ROOM RECORDS" else "DORMITORY SUMMARY REPORT"
     descriptions = {
         "DORMITORY SUMMARY REPORT": "Current rooms and summary counts from rooms.dat, tenants.dat and payments.dat.",
-        "ROOM TYPE REPORT": "Current rooms, occupants and unpaid bills grouped by room type. Debt includes past occupants.",
+        "ROOM TYPE REPORT": "One row per room type: availability, current tenant counts and unpaid room bills, including past occupants.",
         "TENANT STAY & PAYMENT REPORT": "Tenant history, current room types and non-deleted bills, including missing tenant records.",
     }
     description = descriptions.get(title, "Selected-month bills, tenant names and current room types. Bill charges retain their original values.")
@@ -597,13 +597,13 @@ def monthly_billing_report_action():
 
 # ---------- Report 2: แต่ละประเภทห้อง มีใครอยู่บ้าง ----------
 def report_by_room_type():
-    tenant_by_room = {t["room_id"]: t["name"] for t in active_records("TENANT")}
+    tenants = [t for t in active_records("TENANT") if t["status"] == "ACTIVE"]
     bills = active_records("PAYMENT")
     by_type = {}
     for room in active_records("ROOM"):
         by_type.setdefault(room["room_type"], []).append({
             "room_id": room["room_id"], "status": room["status"],
-            "tenant_name": tenant_by_room.get(room["room_id"], "-"),
+            "tenant_count": sum(t["room_id"] == room["room_id"] for t in tenants),
             "outstanding": round(sum(p["total"] for p in bills if p["room_id"] == room["room_id"]
                                       and p["status"] == "UNPAID"), 2)})
     return by_type
@@ -611,14 +611,21 @@ def report_by_room_type():
 
 def room_type_report_action():
     by_type = report_by_room_type()
-    rows = [dict(room, room_type=room_type)
-            for room_type, rooms in sorted(by_type.items()) for room in rooms]
-    occupied = sum(room["status"] == "OCCUPIED" for room in rows)
+    rows = [{"room_type": room_type, "total_rooms": len(rooms),
+             "occupied": sum(room["status"] == "OCCUPIED" for room in rooms),
+             "available": sum(room["status"] == "AVAILABLE" for room in rooms),
+             "tenants": sum(room["tenant_count"] for room in rooms),
+             "outstanding": round(sum(room["outstanding"] for room in rooms), 2)}
+            for room_type, rooms in sorted(by_type.items())]
+    total_rooms = sum(row["total_rooms"] for row in rows)
+    occupied = sum(row["occupied"] for row in rows)
+    available = sum(row["available"] for row in rows)
     lines = ["ROOM TYPE REPORT", ""]
-    lines += print_table(rows, ["Type", "Room ID", "Status", "Tenant", "Unpaid Amt"],
-                         ["room_type", "room_id", "status", "tenant_name", "outstanding"])
-    lines += ["", f"Summary: {len(by_type)} types | {len(rows)} rooms | "
-              f"{occupied} occupied | {len(rows) - occupied} available"]
+    lines += print_table(rows, ["Type", "Total Rooms", "Occupied", "Available", "Tenants", "Unpaid Amt"],
+                         ["room_type", "total_rooms", "occupied", "available", "tenants", "outstanding"])
+    lines += ["", f"Summary: {len(rows)} types | {total_rooms} rooms | "
+              f"{occupied} occupied | {available} available",
+              "Tenants counts current tenants; unpaid amounts include past occupants of current rooms."]
     print("\n" + "\n".join(lines))
     write_lines_to_file(ROOMTYPE_REPORT_PATH, lines)
     print(f"Saved to {ROOMTYPE_REPORT_PATH}")
@@ -664,24 +671,17 @@ def room_type_report_action():
 
 def report_all_tenants_history():
     """รายงาน 3 (ฉบับตาราง): ทุกผู้เช่าที่เคยอยู่ (รวมคนที่ย้ายออกแล้ว)
-    พร้อมจำนวนเดือนที่อยู่ และยอดจ่าย/ค้างจ่าย -> เอาไว้ทำตาราง + สรุปท้าย"""
+    พร้อมยอดจ่าย/ค้างจ่าย -> เอาไว้ทำตาราง + สรุปท้าย"""
     rows = []
     all_bills = active_records("PAYMENT")
     rooms = {r["room_id"]: r for r in active_records("ROOM")}
     for slot, tenant in read_all("TENANT"):
         tenant_id = tenant["tenant_id"]
-        start = datetime.datetime.strptime(tenant["contract_start"], "%Y-%m-%d").date()
-        end = (datetime.date.today() if tenant["status"] == "ACTIVE" else
-               datetime.datetime.strptime(tenant["contract_end"], "%Y-%m-%d").date())
-        months = (end.year - start.year) * 12 + (end.month - start.month)
-        if end.day < start.day:
-            months -= 1
-        months = max(months, 0)
         bills = [p for p in all_bills if p["tenant_id"] == tenant_id]
         paid = [p["total"] for p in bills if p["status"] == "PAID"]
         unpaid = [p["total"] for p in bills if p["status"] == "UNPAID"]
         rows.append({"tenant_id": tenant_id, "name": tenant["name"], "room_id": tenant["room_id"],
-                     "status": tenant["status"], "months": months,
+                     "status": tenant["status"],
                      "paid_count": len(paid), "paid_total": round(sum(paid), 2),
                      "unpaid_count": len(unpaid), "unpaid_total": round(sum(unpaid), 2)})
     known_ids = {row["tenant_id"] for row in rows}
@@ -691,7 +691,7 @@ def report_all_tenants_history():
         unpaid = [p["total"] for p in bills if p["status"] == "UNPAID"]
         rows.append({"tenant_id": tenant_id, "name": "(missing tenant record)",
                      "room_id": ",".join(sorted({p["room_id"] for p in bills})),
-                     "status": "MISSING", "months": "-", "paid_count": len(paid),
+                     "status": "MISSING", "paid_count": len(paid),
                      "paid_total": round(sum(paid), 2), "unpaid_count": len(unpaid),
                      "unpaid_total": round(sum(unpaid), 2)})
     for row in rows:
@@ -701,9 +701,9 @@ def report_all_tenants_history():
 
 def tenant_history_report_action():
     rows = report_all_tenants_history()
-    headers = ["Tenant ID", "Name", "Room", "Type", "Status", "Months",
+    headers = ["Tenant ID", "Name", "Room", "Type", "Status",
                "Paid#", "Paid Amt", "Unpaid#", "Unpaid Amt"]
-    keys = ["tenant_id", "name", "room_id", "room_type", "status", "months",
+    keys = ["tenant_id", "name", "room_id", "room_type", "status",
             "paid_count", "paid_total", "unpaid_count", "unpaid_total"]
     lines = ["TENANT STAY & PAYMENT REPORT", ""]
     lines += print_table(rows, headers, keys)
@@ -768,41 +768,8 @@ def add_rooms_range():
     print(f"{len(room_ids)} rooms added ({room_ids[0]} - {room_ids[-1]}).")
 
 
-def next_payment_id():
-    ids = [int(r["payment_id"]) for slot, r in read_all("PAYMENT")
-           if r["payment_id"].isdigit()]
-    return str(max(ids, default=0) + 1)
 
 
-def add_monthly_bills_for_all():
-    """ออกบิลของเดือนหนึ่งให้ผู้เช่า ACTIVE ทุกคนที่ยังไม่มีบิลเดือนนั้น"""
-    month = ask_month("Billing month (YYYY-MM): ")
-    billed = {p["tenant_id"] for p in active_records("PAYMENT")
-              if p["billing_month"] == month}
-    tenants = [t for t in active_records("TENANT")
-               if t["status"] == "ACTIVE" and t["tenant_id"] not in billed]
-    if not tenants:
-        print("No tenants need a bill for this month.")
-        return
-    print(f"{len(tenants)} tenant(s) to bill. Leave water units blank to skip a tenant.")
-    count = 0
-    for tenant in tenants:
-        print(f"\nTenant {tenant['tenant_id']} - {show_value(tenant['name'])} "
-              f"(Room {tenant['room_id']})")
-        water = ask_amount("  Water units (blank = skip): ", optional=True)
-        if water is None:
-            continue
-        electric = ask_amount("  Electric units: ")
-        fine = ask_amount("  Fine: ")
-        damage = ask_amount("  Damage fee: ")
-        try:
-            payment = create_payment(next_payment_id(), tenant["tenant_id"], month,
-                                     water, electric, fine, damage)
-            count += 1
-            print(f"  Bill {payment['payment_id']} added. Total: {payment['total']:.2f}")
-        except ValueError as error:
-            print(f"  ERROR: {error}")
-    print(f"\nDone. {count} bill(s) created.")
 
 
 # ============= =============
@@ -997,7 +964,6 @@ def management_menu(kind):
                "2": f"Update {name}", "3": f"Delete {name}", "4": f"View {name}"}
     if kind == "PAYMENT":
         options["5"] = "Mark as Paid"
-        options["6"] = "Add Bills for All Tenants (one month)"
     elif kind == "ROOM":
         options["5"] = "Add Multiple Rooms (ID range)"
     options["0"] = "Back"
@@ -1015,8 +981,6 @@ def management_menu(kind):
             view_menu(kind)
         elif choice == "5":
             run_action(add_rooms_range if kind == "ROOM" else mark_paid)
-        else:  # "6" (มีเฉพาะ PAYMENT)
-            run_action(add_monthly_bills_for_all)
 
 
 def dormitory_information():

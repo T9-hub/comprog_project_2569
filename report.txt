@@ -1,7 +1,7 @@
 ====================================================================================================
                    STUDENT DORMITORY MANAGEMENT SYSTEM - DORMITORY SUMMARY REPORT                   
 ====================================================================================================
-Generated At : 2026-10-07 04:04:24 (+07:00)
+Generated At : 2026-10-08 11:26:33 (+07:00)
 App Version  : 1.0
 Endianness   : Little-Endian
 Encoding     : UTF-8 (with fixed-size byte fields)
@@ -17,9 +17,9 @@ ROOM RECORDS
 | Room | Type   | Rent    | Status    | Tenant ID | Name        | Unpaid Amt |
 +------+--------+---------+-----------+-----------+-------------+------------+
 | 101  | Single | 3000.00 | OCCUPIED  | 1         | Somchai     | 3590.00    |
-| 102  | Double | 4000.00 | AVAILABLE |           | -           | 4590.00    |
+| 102  | Double | 4000.00 | OCCUPIED  | 2         | Somying     | 4590.00    |
 | 103  | Twin   | 4500.00 | OCCUPIED  | 3         | Wichai      | 5090.00    |
-| 104  | Deluxe | 6000.00 | OCCUPIED  | 37        | Thanlrit    | 6590.00    |
+| 104  | Deluxe | 6000.00 | OCCUPIED  | 4         | Orathai     | 6590.00    |
 | 105  | Suite  | 7500.00 | OCCUPIED  | 5         | Prayut      | 8090.00    |
 | 106  | Studio | 5000.00 | OCCUPIED  | 6         | Maneerat    | 5590.00    |
 | 107  | Single | 3000.00 | OCCUPIED  | 7         | Thanakorn   | 3590.00    |
@@ -51,23 +51,13 @@ ROOM RECORDS
 | 133  | Twin   | 4500.00 | OCCUPIED  | 33        | Sakchai     | 5090.00    |
 | 134  | Deluxe | 6000.00 | OCCUPIED  | 34        | Ladda       | 6590.00    |
 | 135  | Suite  | 7500.00 | OCCUPIED  | 35        | Phanuwat    | 8090.00    |
-| 136  | Studio | 5000.00 | OCCUPIED  | 36        | Phensri     | 0          |
+| 136  | Studio | 5000.00 | OCCUPIED  | 36        | Phensri     | 5590.00    |
 | 137  | Single | 3000.00 | AVAILABLE |           | -           | 0          |
-| 140  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 141  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 142  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 143  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 144  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 145  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 146  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 147  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 148  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 149  | Single | 500.00  | AVAILABLE |           | -           | 0          |
-| 150  | Single | 500.00  | AVAILABLE |           | -           | 0          |
+| 138  | Double | 4000.00 | AVAILABLE |           | -           | 0          |
 +------+--------+---------+-----------+-----------+-------------+------------+
 
-Summary: 48 rooms | 13 available | 35 current tenants | 35 unpaid bills
-Paid amount: 408070.00 | Outstanding: 195650.00
+Summary: 38 rooms | 2 available | 36 current tenants | 36 unpaid bills
+Paid amount: 402480.00 | Outstanding: 201240.00
 
 ====================================================================================================
                                            END OF REPORT                                            
